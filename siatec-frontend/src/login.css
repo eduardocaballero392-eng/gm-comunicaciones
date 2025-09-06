@@ -1,0 +1,87 @@
+/* src/login.css */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgb(85, 82, 82);
+}
+
+.login-card {
+  background: #fff;
+  padding: 2em;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 350px;
+}
+
+h2 {
+  font-size: 1.8em;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+  margin-bottom: 0.5em;
+}
+
+p {
+  text-align: center;
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 1.5em;
+}
+
+/* 🔹 Label mejorado */
+label {
+  display: block;
+  margin-bottom: 6px;  /* separación con input */
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 🔹 Inputs */
+.input-login {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  margin-bottom: 1em;  /* separación entre inputs */
+  outline: none;
+}
+
+.input-login:focus {
+  border-color: #fb923c;  /* naranja */
+  box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.3);
+}
+
+/* 🔹 Botón */
+.btn-login {
+  width: 100%;
+  padding: 10px;
+  background-color: #525253;
+  color: white;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  border: none;
+  margin-top: 0.5em;
+}
+
+.btn-login:hover {
+  background-color: #e01a1a;
+}
+
+.text-footer {
+  text-align: center;
+  font-size: 0.85em;
+  color: #666;
+  margin-top: 1.2em;
+}
+.text-footer a {
+  color: #fb923c;
+  text-decoration: none;
+}
+.text-footer a:hover {
+  text-decoration: underline;
+}
