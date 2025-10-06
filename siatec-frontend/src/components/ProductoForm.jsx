@@ -1,18 +1,18 @@
-// src/components/ClienteForm.jsx
+// src/components/ProductoForm.jsx
 import React, { useState, useEffect } from "react";
-import "./ClienteForm.css"; // recuerda crear este CSS
+import "./ProductoForm.css";
 
-export default function ClienteForm({ cliente, onSave, onCancel }) {
+export default function ProductoForm({ producto, onSave, onCancel }) {
   const [formData, setFormData] = useState({
     nombre: "",
-    email: "",
-    telefono: "",
-    direccion: "",
+    precio: "",
+    stock: "",
+    categoria_id: "",   // 👈 cambiar "categoria" por "categoria_id"
   });
 
   useEffect(() => {
-    if (cliente) setFormData(cliente);
-  }, [cliente]);
+    if (producto) setFormData(producto);
+  }, [producto]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,7 +26,7 @@ export default function ClienteForm({ cliente, onSave, onCancel }) {
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h2>{cliente ? "Editar Cliente" : "Nuevo Cliente"}</h2>
+        <h2>{producto ? "Editar Producto" : "Nuevo Producto"}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Nombre</label>
@@ -40,32 +40,32 @@ export default function ClienteForm({ cliente, onSave, onCancel }) {
           </div>
 
           <div className="form-group">
-            <label>Email</label>
+            <label>Precio</label>
             <input
-              type="email"
-              name="email"
-              value={formData.email}
+              type="number"
+              name="precio"
+              value={formData.precio}
               onChange={handleChange}
               required
             />
           </div>
 
           <div className="form-group">
-            <label>Teléfono</label>
+            <label>Stock</label>
             <input
-              type="text"
-              name="telefono"
-              value={formData.telefono}
+              type="number"
+              name="stock"
+              value={formData.stock}
               onChange={handleChange}
             />
           </div>
 
           <div className="form-group">
-            <label>Dirección</label>
+            <label>Categoría ID</label>
             <input
-              type="text"
-              name="direccion"
-              value={formData.direccion}
+              type="number"
+              name="categoria_id"   // 👈 ahora manda el id correcto
+              value={formData.categoria_id}
               onChange={handleChange}
             />
           </div>

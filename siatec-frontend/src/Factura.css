@@ -1,0 +1,171 @@
+.factura-container {
+  padding: 30px;
+  font-size: 14px;        /* base más pequeña */
+  max-width: 1400px;      /* ancho del contenedor */
+  margin: auto;
+}
+
+.factura-grid {
+  display: grid;  
+  grid-template-columns: 1fr 1.5fr; /* izquierda chica, derecha grande */
+  gap: 30px;
+}
+
+.factura-col {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-height: 600px;
+  font-size: 14px; /* texto interno más compacto */
+}
+
+/* 🔹 Títulos grandes */
+.factura-container h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.factura-container h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+/* 🔹 Barra de datos */
+.factura-datos {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* 🔹 Inputs y selects compactos */
+.input-corto,
+.input-busqueda,
+.input-cantidad,
+select {
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: auto;
+}
+
+.input-busqueda {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+/* 🔹 Botones compactos */
+.btn-imprimir,
+.btn-agregar,
+.btn-eliminar,
+.btn-regresar {
+  font-size: 13px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-imprimir {
+  background: #007bff;
+  color: white;
+}
+.btn-imprimir:hover {
+  background: #0056b3;
+}
+
+.btn-agregar {
+  background: #28a745;
+  color: white;
+}
+.btn-agregar:hover {
+  background: #1e7e34;
+}
+
+.btn-eliminar {
+  background: #dc3545;
+  color: white;
+}
+.btn-eliminar:hover {
+  background: #a71d2a;
+}
+
+.btn-regresar {
+  background: #444;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.btn-regresar:hover {
+  background: #222;
+}
+
+/* 🔹 Tablas compactas */
+.tabla-productos,
+.tabla-carrito {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.tabla-productos th,
+.tabla-carrito th {
+  background: #6491e6;
+  padding: 8px;
+  text-align: center;       /* encabezados centrados */
+  border-bottom: 2px solid #ddd;
+}
+
+.tabla-productos td,
+.tabla-carrito td {
+  padding: 6px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;       /* 🔹 todo centrado */
+  vertical-align: middle;
+}
+
+/* 🔹 Precios y subtotales centrados y en una sola línea */
+.tabla-productos td:nth-child(2),
+.tabla-carrito td:nth-child(3),
+.tabla-carrito td:nth-child(4) {
+  white-space: nowrap;
+  text-align: center;   /* centrado */
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.btn-guardar {
+  background: #ff9800;
+  color: white;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-guardar:hover {
+  background: #e68900;
+}
+
+/* 🔹 Botón Guardar - Compacto y consistente con el diseño */
+.btn-guardar {
+  background: #ff9800;
+  color: white;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-guardar:hover {
+  background: #e68900;
+}

@@ -12,8 +12,10 @@ export default function Sidebar({ onLogout }) {
   const menuItems = [
     { name: "Dashboard", path: "/dashboard" },
     { name: "Clientes", path: "/clientes" },
-    { name: "Productos", path: "/productos" },
-    { name: "Facturas", path: "/facturas" },
+    { name: "Productos", path: "/producto" },
+    { name: "Facturas", path: "/factura" },
+   
+
   ];
 
   return (

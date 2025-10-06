@@ -1,0 +1,46 @@
+.factura-detalle {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.factura-detalle h1, 
+.factura-detalle h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.factura-detalle table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.factura-detalle table th,
+.factura-detalle table td {
+  border: 1px solid #ccc;
+  padding: 0.7rem;
+  text-align: center;
+}
+
+.btn-volver, .btn-imprimir {
+  margin: 1rem 0.5rem;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-volver {
+  background: #444;
+  color: white;
+}
+
+.btn-imprimir {
+  background: #0a7af2;
+  color: white;
+}
