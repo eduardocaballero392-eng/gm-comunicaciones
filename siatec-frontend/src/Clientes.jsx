@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ClienteForm from "./components/ClienteForm";
 import { useNavigate } from "react-router-dom";
+import { apiRequest } from "./config";
 
 export default function Clientes() {
   const [clientes, setClientes] = useState([]);
@@ -13,7 +14,7 @@ export default function Clientes() {
   // 🔹 Obtener clientes desde backend
   const fetchClientes = async () => {
     try {
-      const res = await fetch("http://localhost:3001/clientes");
+      const res = await fetch(apiRequest("/clientes"));
       const data = await res.json();
       setClientes(data);
     } catch (err) {
@@ -29,13 +30,13 @@ export default function Clientes() {
   const handleSave = async (cliente) => {
     try {
       if (cliente.id) {
-        await fetch(`http://localhost:3001/clientes/${cliente.id}`, {
+        await fetch(apiRequest(`/clientes/${cliente.id}`), {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(cliente),
         });
       } else {
-        await fetch("http://localhost:3001/clientes", {
+        await fetch(apiRequest("/clientes"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(cliente),
@@ -53,7 +54,7 @@ export default function Clientes() {
   const handleDelete = async (id) => {
     if (!window.confirm("¿Seguro que quieres eliminar este cliente?")) return;
     try {
-      await fetch(`http://localhost:3001/clientes/${id}`, { method: "DELETE" });
+      await fetch(apiRequest(`/clientes/${id}`), { method: "DELETE" });
       fetchClientes();
     } catch (err) {
       console.error("Error al eliminar cliente:", err);

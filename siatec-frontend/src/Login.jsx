@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./login.css";
+import { apiRequest } from "./config";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:3001/login", {
+      const response = await axios.post(apiRequest("/login"), {
         email,
         password,
       });

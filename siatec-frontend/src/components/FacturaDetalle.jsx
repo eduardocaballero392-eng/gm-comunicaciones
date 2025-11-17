@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaPrint } from "react-icons/fa";
 import "./facturaDetalle.css";
+import { apiRequest } from "../config";
 
 export default function FacturaDetalle() {
   const { id } = useParams(); // id de la URL
@@ -10,7 +11,7 @@ export default function FacturaDetalle() {
   const [factura, setFactura] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:3001/facturas/${id}`)
+    fetch(apiRequest(`/facturas/${id}`))
       .then((res) => res.json())
       .then((data) => setFactura(data))
       .catch((err) => console.error("Error cargando factura:", err));

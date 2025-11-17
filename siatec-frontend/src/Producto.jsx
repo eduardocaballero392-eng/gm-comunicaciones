@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ProductoForm from "./components/ProductoForm";
 import { useNavigate } from "react-router-dom";
+import { apiRequest } from "./config";
 
 export default function Producto() {
   const [productos, setProductos] = useState([]);
@@ -13,7 +14,7 @@ export default function Producto() {
   // 🔹 Obtener productos desde backend
   const fetchProductos = async () => {
     try {
-      const res = await fetch("http://localhost:3001/productos");
+      const res = await fetch(apiRequest("/productos"));
       if (!res.ok) throw new Error("Error en la respuesta del servidor");
       const data = await res.json();
       setProductos(data);
@@ -30,13 +31,13 @@ export default function Producto() {
   const handleSave = async (producto) => {
     try {
       if (producto.id) {
-        await fetch(`http://localhost:3001/productos/${producto.id}`, {
+        await fetch(apiRequest(`/productos/${producto.id}`), {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(producto),
         });
       } else {
-        await fetch("http://localhost:3001/productos", {
+        await fetch(apiRequest("/productos"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(producto),
@@ -54,7 +55,7 @@ export default function Producto() {
   const handleDelete = async (id) => {
     if (!window.confirm("¿Seguro que quieres eliminar este producto?")) return;
     try {
-      await fetch(`http://localhost:3001/productos/${id}`, { method: "DELETE" });
+      await fetch(apiRequest(`/productos/${id}`), { method: "DELETE" });
       fetchProductos();
     } catch (err) {
       console.error("Error al eliminar producto:", err);

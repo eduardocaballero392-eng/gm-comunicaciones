@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Dashboard.css";
 import Sidebar from "./components/Sidebar";
+import { apiRequest } from "./config";
 import {
   BarChart,
   Bar,
@@ -32,7 +33,7 @@ const Dashboard = ({ onLogout }) => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:3001/dashboard/summary");
+        const response = await fetch(apiRequest("/dashboard/summary"));
         
         if (!response.ok) {
           throw new Error(`Error ${response.status}: ${response.statusText}`);

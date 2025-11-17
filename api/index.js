@@ -1,4 +1,4 @@
-// server.js
+// api/index.js - Punto de entrada para Vercel
 import express from "express";
 import mysql from "mysql2";
 import cors from "cors";
@@ -6,14 +6,13 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 const SECRET_KEY = process.env.SECRET_KEY || "clave_secreta_super_segura";
 
-// ---------------- Conexión a MySQL ----------------
+// ---------------- Conexión a MySQL con variables de entorno ----------------
 const db = mysql.createConnection({
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "eduardo1", 
+  password: process.env.DB_PASSWORD || "eduardo1",
   database: process.env.DB_NAME || "facturacion"
 });
 
@@ -29,7 +28,7 @@ app.use(cors());
 app.use(express.json());
 
 // ---------------- RUTAS USUARIOS ----------------
-app.post("/register", (req, res) => {
+app.post("/api/register", (req, res) => {
   const { nombre, email, password, rol } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
@@ -43,7 +42,7 @@ app.post("/register", (req, res) => {
   );
 });
 
-app.post("/login", (req, res) => {
+app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
 
   db.query("SELECT * FROM usuarios WHERE email = ?", [email], (err, results) => {
@@ -67,14 +66,14 @@ app.post("/login", (req, res) => {
 });
 
 // ---------------- RUTAS CLIENTES ----------------
-app.get("/clientes", (req, res) => {
+app.get("/api/clientes", (req, res) => {
   db.query("SELECT * FROM clientes", (err, results) => {
     if (err) return res.status(500).json({ error: "Error de servidor." });
     res.json(results);
   });
 });
 
-app.get("/clientes/:id", (req, res) => {
+app.get("/api/clientes/:id", (req, res) => {
   const { id } = req.params;
   db.query("SELECT * FROM clientes WHERE id = ?", [id], (err, results) => {
     if (err) return res.status(500).json({ error: "Error de servidor." });
@@ -83,7 +82,7 @@ app.get("/clientes/:id", (req, res) => {
   });
 });
 
-app.post("/clientes", (req, res) => {
+app.post("/api/clientes", (req, res) => {
   const { nombre, email, telefono, direccion } = req.body;
   db.query(
     "INSERT INTO clientes (nombre, email, telefono, direccion) VALUES (?,?,?,?)",
@@ -95,7 +94,7 @@ app.post("/clientes", (req, res) => {
   );
 });
 
-app.put("/clientes/:id", (req, res) => {
+app.put("/api/clientes/:id", (req, res) => {
   const { id } = req.params;
   const { nombre, email, telefono, direccion } = req.body;
 
@@ -110,7 +109,7 @@ app.put("/clientes/:id", (req, res) => {
   );
 });
 
-app.delete("/clientes/:id", (req, res) => {
+app.delete("/api/clientes/:id", (req, res) => {
   const { id } = req.params;
   db.query("DELETE FROM clientes WHERE id = ?", [id], (err, result) => {
     if (err) return res.status(500).json({ error: "Error al eliminar cliente." });
@@ -120,7 +119,7 @@ app.delete("/clientes/:id", (req, res) => {
 });
 
 // ---------------- RUTAS FACTURAS ----------------
-app.post("/facturas", (req, res) => {
+app.post("/api/facturas", (req, res) => {
   const { cliente_id, usuario_id, metodo, total, carrito } = req.body;
 
   const productosJSON = JSON.stringify(carrito);
@@ -152,8 +151,7 @@ app.post("/facturas", (req, res) => {
   });
 });
 
-// ✅ Obtener una factura por ID (para detalle/imprimir)
-app.get("/facturas/:id", (req, res) => {
+app.get("/api/facturas/:id", (req, res) => {
   const { id } = req.params;
 
   db.query(
@@ -176,40 +174,7 @@ app.get("/facturas/:id", (req, res) => {
   );
 });
 
-// ---------------- RUTAS PRODUCTOS ----------------
-app.get("/productos", (req, res) => {
-  db.query("SELECT * FROM productos", (err, results) => {
-    if (err) {
-      console.error("Error al obtener productos:", err);
-      return res.status(500).json({ error: "Error de servidor." });
-    }
-    res.json(results);
-  });
-});
-
-app.get("/productos/:id", (req, res) => {
-  const { id } = req.params;
-  db.query("SELECT * FROM productos WHERE id = ?", [id], (err, results) => {
-    if (err) return res.status(500).json({ error: "Error de servidor." });
-    if (results.length === 0) return res.status(404).json({ error: "Producto no encontrado" });
-    res.json(results[0]);
-  });
-});
-
-app.post("/productos", (req, res) => {
-  const { nombre, precio, stock, categoria_id } = req.body;
-  db.query(
-    "INSERT INTO productos (nombre, precio, stock, categoria_id) VALUES (?,?,?,?)",
-    [nombre, precio, stock, categoria_id],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: "Error al crear producto." });
-      res.json({ message: "Producto creado correctamente", id: result.insertId });
-    }
-  );
-});
-
-// ✅ Obtener todas las facturas (para la tabla principal)
-app.get("/facturas", (req, res) => {
+app.get("/api/facturas", (req, res) => {
   db.query(
     `SELECT f.id, f.correlativo, c.nombre AS cliente_nombre, f.total, 
             COALESCE(f.metodo, 'N/A') AS metodo, f.fecha
@@ -226,7 +191,39 @@ app.get("/facturas", (req, res) => {
   );
 });
 
-app.put("/productos/:id", (req, res) => {
+// ---------------- RUTAS PRODUCTOS ----------------
+app.get("/api/productos", (req, res) => {
+  db.query("SELECT * FROM productos", (err, results) => {
+    if (err) {
+      console.error("Error al obtener productos:", err);
+      return res.status(500).json({ error: "Error de servidor." });
+    }
+    res.json(results);
+  });
+});
+
+app.get("/api/productos/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("SELECT * FROM productos WHERE id = ?", [id], (err, results) => {
+    if (err) return res.status(500).json({ error: "Error de servidor." });
+    if (results.length === 0) return res.status(404).json({ error: "Producto no encontrado" });
+    res.json(results[0]);
+  });
+});
+
+app.post("/api/productos", (req, res) => {
+  const { nombre, precio, stock, categoria_id } = req.body;
+  db.query(
+    "INSERT INTO productos (nombre, precio, stock, categoria_id) VALUES (?,?,?,?)",
+    [nombre, precio, stock, categoria_id],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: "Error al crear producto." });
+      res.json({ message: "Producto creado correctamente", id: result.insertId });
+    }
+  );
+});
+
+app.put("/api/productos/:id", (req, res) => {
   const { id } = req.params;
   const { nombre, precio, stock, categoria_id } = req.body;
 
@@ -241,7 +238,7 @@ app.put("/productos/:id", (req, res) => {
   );
 });
 
-app.delete("/productos/:id", (req, res) => {
+app.delete("/api/productos/:id", (req, res) => {
   const { id } = req.params;
   db.query("DELETE FROM productos WHERE id = ?", [id], (err, result) => {
     if (err) return res.status(500).json({ error: "Error al eliminar producto." });
@@ -251,12 +248,10 @@ app.delete("/productos/:id", (req, res) => {
 });
 
 // ---------------- DASHBOARD SUMMARY ----------------
-app.get("/dashboard/summary", (req, res) => {
+app.get("/api/dashboard/summary", (req, res) => {
   const summary = {};
 
-  // Función para continuar el proceso
   const continuarProceso = () => {
-    // Ventas por método de pago (DE TUS DATOS REALES)
     db.query(
       `SELECT metodo, COUNT(*) AS total 
        FROM facturas 
@@ -270,7 +265,6 @@ app.get("/dashboard/summary", (req, res) => {
           summary.ventasPorMetodo = metodos || [];
         }
 
-        // Últimas facturas
         db.query(
           `SELECT f.id, c.nombre AS cliente, f.total, 
                   COALESCE(f.metodo, 'N/A') AS metodo, 
@@ -312,34 +306,48 @@ app.get("/dashboard/summary", (req, res) => {
         }
         summary.totalFacturas = facturas[0]?.totalFacturas || 0;
 
-        // Top Categorías Vendidas (ELIMINA DUPLICADOS POR NOMBRE)
-db.query(`
-  SELECT 
-    MAX(c.nombre) AS categoria,  -- 👈 Usa MAX para forzar un solo valor
-    COUNT(DISTINCT f.id) AS total_vendido
-  FROM facturas f
-  JOIN productos p ON JSON_CONTAINS(f.productos, JSON_OBJECT('id', p.id))
-  JOIN categorias c ON p.categoria_id = c.id
-  GROUP BY c.nombre  -- 👈 Agrupa solo por nombre
-  ORDER BY total_vendido DESC
-  LIMIT 4
-`, (err, categorias) => {
-  if (err) {
-    console.warn("⚠️ Error en categorías:", err);
-    summary.ventasPorCategoria = [];
-  } else {
-    summary.ventasPorCategoria = categorias || [];
-  }
-  continuarProceso();
-});
+        db.query(`
+          SELECT 
+            MAX(c.nombre) AS categoria,
+            COUNT(DISTINCT f.id) AS total_vendido
+          FROM facturas f
+          JOIN productos p ON JSON_CONTAINS(f.productos, JSON_OBJECT('id', p.id))
+          JOIN categorias c ON p.categoria_id = c.id
+          GROUP BY c.nombre
+          ORDER BY total_vendido DESC
+          LIMIT 4
+        `, (err, categorias) => {
+          if (err) {
+            console.warn("⚠️ Error en categorías:", err);
+            summary.ventasPorCategoria = [];
+          } else {
+            summary.ventasPorCategoria = categorias || [];
+          }
+          continuarProceso();
+        });
       });
     });
   });
 });
 
-
-
-// ---------------- INICIAR SERVIDOR ----------------
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+// Ruta raíz mejorada
+app.get('/', (req, res) => {
+  res.json({ 
+    mensaje: "GM Comunicaciones API",
+    status: "Funcionando",
+    version: "1.0.0",
+    rutas: [
+      "/api/login",
+      "/api/register",
+      "/api/clientes",
+      "/api/productos",
+      "/api/facturas",
+      "/api/dashboard/summary"
+    ],
+    documentacion: "Todas las rutas están disponibles bajo el prefijo /api"
+  });
 });
+
+// Exportar para Vercel
+export default app;
+

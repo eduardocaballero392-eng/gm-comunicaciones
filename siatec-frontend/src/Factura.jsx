@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import "./factura.css";
 import { FaTrash, FaPrint, FaArrowLeft, FaSave } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { apiRequest } from "./config";
 
 export default function Factura() {
   const navigate = useNavigate();
@@ -15,12 +16,12 @@ export default function Factura() {
   const [carrito, setCarrito] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/clientes")
+    fetch(apiRequest("/clientes"))
       .then((res) => res.json())
       .then((data) => setClientes(data))
       .catch((err) => console.error("Error cargando clientes:", err));
 
-    fetch("http://localhost:3001/productos")
+    fetch(apiRequest("/productos"))
       .then((res) => res.json())
       .then((data) => setProductos(data))
       .catch((err) => console.error("Error cargando productos:", err));
@@ -71,7 +72,7 @@ export default function Factura() {
     };
 
     try {
-      const response = await fetch("http://localhost:3001/facturas", {
+      const response = await fetch(apiRequest("/facturas"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
