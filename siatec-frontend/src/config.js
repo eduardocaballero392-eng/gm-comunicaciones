@@ -11,4 +11,3 @@ export const apiRequest = (endpoint) => {
   // Si no, agregar /api
   return `${API_URL}/api${endpoint}`;
 };
-

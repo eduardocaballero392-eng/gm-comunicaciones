@@ -334,20 +334,41 @@ app.get("/api/dashboard/summary", (req, res) => {
 app.get('/', (req, res) => {
   res.json({ 
     mensaje: "GM Comunicaciones API",
-    status: "Funcionando",
+    status: "✅ Funcionando correctamente",
     version: "1.0.0",
-    rutas: [
-      "/api/login",
-      "/api/register",
-      "/api/clientes",
-      "/api/productos",
-      "/api/facturas",
-      "/api/dashboard/summary"
-    ],
-    documentacion: "Todas las rutas están disponibles bajo el prefijo /api"
+    entorno: process.env.NODE_ENV || "development",
+    baseUrl: `${req.protocol}://${req.get('host')}`,
+    rutas: {
+      autenticacion: [
+        "POST /api/login - Iniciar sesión",
+        "POST /api/register - Registrar usuario"
+      ],
+      clientes: [
+        "GET /api/clientes - Listar clientes",
+        "GET /api/clientes/:id - Obtener cliente",
+        "POST /api/clientes - Crear cliente",
+        "PUT /api/clientes/:id - Actualizar cliente",
+        "DELETE /api/clientes/:id - Eliminar cliente"
+      ],
+      productos: [
+        "GET /api/productos - Listar productos",
+        "GET /api/productos/:id - Obtener producto",
+        "POST /api/productos - Crear producto",
+        "PUT /api/productos/:id - Actualizar producto",
+        "DELETE /api/productos/:id - Eliminar producto"
+      ],
+      facturas: [
+        "GET /api/facturas - Listar facturas",
+        "GET /api/facturas/:id - Obtener factura",
+        "POST /api/facturas - Crear factura"
+      ],
+      dashboard: [
+        "GET /api/dashboard/summary - Resumen del dashboard"
+      ]
+    },
+    nota: "El frontend debe desplegarse por separado en Vercel. Ver VERCEL_SETUP.md para más información."
   });
 });
 
 // Exportar para Vercel
 export default app;
-

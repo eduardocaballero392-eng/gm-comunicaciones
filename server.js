@@ -6,15 +6,15 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const app = express();
-const PORT = process.env.PORT || 3001;
-const SECRET_KEY = process.env.SECRET_KEY || "clave_secreta_super_segura";
+const PORT = 3001;
+const SECRET_KEY = "clave_secreta_super_segura";
 
 // ---------------- Conexión a MySQL ----------------
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "eduardo1", 
-  database: process.env.DB_NAME || "facturacion"
+  host: "localhost",
+  user: "root",
+  password: "eduardo1",
+  database: "facturacion"
 });
 
 db.connect((err) => {
@@ -337,9 +337,16 @@ db.query(`
   });
 });
 
-
+// Agrega esto en tu server.js
+app.get('/', (req, res) => {
+  res.json({ 
+    mensaje: "GM Comunicaciones API",
+    status: "Funcionando",
+    rutas: ["/api/..."] 
+  });
+});
 
 // ---------------- INICIAR SERVIDOR ----------------
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
