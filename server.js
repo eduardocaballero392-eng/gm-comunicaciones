@@ -208,6 +208,24 @@ app.post("/productos", (req, res) => {
   );
 });
 
+// ✅ Obtener todas las facturas (para la tabla principal)
+app.get("/facturas", (req, res) => {
+  db.query(
+    `SELECT f.id, f.correlativo, c.nombre AS cliente_nombre, f.total, 
+            COALESCE(f.metodo, 'N/A') AS metodo, f.fecha
+     FROM facturas f
+     JOIN clientes c ON f.cliente_id = c.id
+     ORDER BY f.fecha DESC`,
+    (err, results) => {
+      if (err) {
+        console.error("❌ Error al obtener facturas:", err);
+        return res.status(500).json({ error: "Error al obtener facturas" });
+      }
+      res.json(results);
+    }
+  );
+});
+
 app.put("/productos/:id", (req, res) => {
   const { id } = req.params;
   const { nombre, precio, stock, categoria_id } = req.body;
@@ -236,6 +254,45 @@ app.delete("/productos/:id", (req, res) => {
 app.get("/dashboard/summary", (req, res) => {
   const summary = {};
 
+  // Función para continuar el proceso
+  const continuarProceso = () => {
+    // Ventas por método de pago (DE TUS DATOS REALES)
+    db.query(
+      `SELECT metodo, COUNT(*) AS total 
+       FROM facturas 
+       WHERE metodo IS NOT NULL AND metodo != ''
+       GROUP BY metodo`,
+      (err, metodos) => {
+        if (err) {
+          console.warn("⚠️ Error en ventas por método:", err);
+          summary.ventasPorMetodo = [];
+        } else {
+          summary.ventasPorMetodo = metodos || [];
+        }
+
+        // Últimas facturas
+        db.query(
+          `SELECT f.id, c.nombre AS cliente, f.total, 
+                  COALESCE(f.metodo, 'N/A') AS metodo, 
+                  f.fecha
+           FROM facturas f
+           JOIN clientes c ON f.cliente_id = c.id
+           ORDER BY f.fecha DESC
+           LIMIT 5`,
+          (err, ultimas) => {
+            if (err) {
+              console.warn("⚠️ Error en últimas facturas:", err);
+              summary.ultimasFacturas = [];
+            } else {
+              summary.ultimasFacturas = ultimas || [];
+            }
+            res.json(summary);
+          }
+        );
+      }
+    );
+  };
+
   db.query("SELECT COUNT(*) AS totalClientes FROM clientes", (err, clientes) => {
     if (err) return res.status(500).json({ error: "Error en clientes" });
     summary.totalClientes = clientes[0]?.totalClientes || 0;
@@ -255,55 +312,26 @@ app.get("/dashboard/summary", (req, res) => {
         }
         summary.totalFacturas = facturas[0]?.totalFacturas || 0;
 
-        db.query(
-          `SELECT c.nombre AS categoria, SUM(df.cantidad) AS total
-           FROM detalle_factura df
-           JOIN productos p ON df.producto_id = p.id
-           JOIN categorias c ON p.categoria_id = c.id
-           GROUP BY c.nombre`,
-          (err, categorias) => {
-            if (err) {
-              console.warn("⚠️ Error en ventas por categoría, devolviendo []");
-              summary.ventasPorCategoria = [];
-            } else {
-              summary.ventasPorCategoria = categorias || [];
-            }
-
-            db.query(
-              `SELECT p.metodo, COUNT(*) AS total 
-               FROM pagos p
-               GROUP BY p.metodo`,
-              (err, metodos) => {
-                if (err) {
-                  console.warn("⚠️ Error en ventas por método, devolviendo []");
-                  summary.ventasPorMetodo = [];
-                } else {
-                  summary.ventasPorMetodo = metodos || [];
-                }
-
-                db.query(
-                  `SELECT f.id, c.nombre AS cliente, f.total, 
-                          COALESCE(p.metodo, 'N/A') AS metodo, 
-                          f.fecha
-                   FROM facturas f
-                   JOIN clientes c ON f.cliente_id = c.id
-                   LEFT JOIN pagos p ON f.id = p.factura_id
-                   ORDER BY f.fecha DESC
-                   LIMIT 5`,
-                  (err, ultimas) => {
-                    if (err) {
-                      console.warn("⚠️ Error en últimas facturas, devolviendo []");
-                      summary.ultimasFacturas = [];
-                    } else {
-                      summary.ultimasFacturas = ultimas || [];
-                    }
-                    res.json(summary);
-                  }
-                );
-              }
-            );
-          }
-        );
+        // Top Categorías Vendidas (ELIMINA DUPLICADOS POR NOMBRE)
+db.query(`
+  SELECT 
+    MAX(c.nombre) AS categoria,  -- 👈 Usa MAX para forzar un solo valor
+    COUNT(DISTINCT f.id) AS total_vendido
+  FROM facturas f
+  JOIN productos p ON JSON_CONTAINS(f.productos, JSON_OBJECT('id', p.id))
+  JOIN categorias c ON p.categoria_id = c.id
+  GROUP BY c.nombre  -- 👈 Agrupa solo por nombre
+  ORDER BY total_vendido DESC
+  LIMIT 4
+`, (err, categorias) => {
+  if (err) {
+    console.warn("⚠️ Error en categorías:", err);
+    summary.ventasPorCategoria = [];
+  } else {
+    summary.ventasPorCategoria = categorias || [];
+  }
+  continuarProceso();
+});
       });
     });
   });
