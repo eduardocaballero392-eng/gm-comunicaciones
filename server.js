@@ -337,6 +337,15 @@ db.query(`
   });
 });
 
+// Agrega esto en tu server.js
+app.get('/', (req, res) => {
+  res.json({ 
+    mensaje: "GM Comunicaciones API",
+    status: "Funcionando",
+    rutas: ["/api/..."] 
+  });
+});
+
 // ---------------- INICIAR SERVIDOR ----------------
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
