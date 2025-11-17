@@ -9,11 +9,13 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     try {
       const response = await axios.post("http://localhost:3001/login", {
@@ -31,9 +33,13 @@ export default function Login() {
         `Inicio de sesión exitoso 🎉 Bienvenido ${response.data.nombre} (${response.data.rol})`
       );
 
-      // Redirigir al dashboard
-      navigate("/dashboard");
+      // Esperar 3 segundos antes de redirigir
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
+
     } catch (err) {
+      setIsLoading(false);
       if (err.response) {
         setError("Usuario o contraseña incorrectos.");
       } else if (err.request) {
@@ -75,8 +81,12 @@ export default function Login() {
             />
           </div>
 
-          <button type="submit" className="btn-login">
-            Ingresar
+          <button 
+            type="submit" 
+            className="btn-login"
+            disabled={isLoading}
+          >
+            {isLoading ? "Cargando..." : "Ingresar"}
           </button>
         </form>
 

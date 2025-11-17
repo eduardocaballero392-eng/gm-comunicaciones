@@ -9,27 +9,12 @@ import Factura from "./Factura";
 import FacturaDetalle from "./components/FacturaDetalle"; // 👈 ya lo importaste
 import "react-toastify/dist/ReactToastify.css";
 
+//revisar{
 const dummyData = {
-  totalClientes: 12,
-  totalProductos: 50,
-  totalFacturas: 8,
-  ventasPorCategoria: [
-    { categoria: "Electrónica", total: 20 },
-    { categoria: "Ropa", total: 15 },
-    { categoria: "Hogar", total: 10 },
-    { categoria: "Alimentos", total: 5 },
-  ],
-  ventasPorMetodo: [
-    { metodo: "Efectivo", total: 25 },
-    { metodo: "Tarjeta", total: 15 },
-    { metodo: "Yape", total: 10 },
-  ],
-  ultimasFacturas: [
-    { id: 1, cliente: "Juan Pérez", total: 150, metodo: "Efectivo", fecha: new Date() },
-    { id: 2, cliente: "María López", total: 200, metodo: "Tarjeta", fecha: new Date() },
-    { id: 3, cliente: "Carlos Rojas", total: 75, metodo: "Yape", fecha: new Date() },
-  ],
+  
 };
+
+//
 
 function App() {
   const token = localStorage.getItem("token");

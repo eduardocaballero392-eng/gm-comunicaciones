@@ -68,7 +68,7 @@ const Dashboard = ({ onLogout }) => {
     </div>
   );
 
-  const COLORS = ["#920707", "#dab71d", "#087fa3", "#4CAF50", "#9C27B0", "#FF9800"];
+  const COLORS = ["#e92a2aff", "#e4c332ff", "#60c0ddff", "#5ec961ff"];
 
   if (loading) {
     return (
@@ -115,14 +115,15 @@ const Dashboard = ({ onLogout }) => {
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={ventasPorCategoria}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="categoria" stroke="#6b7280" />
+                    <XAxis dataKey="categoria" stroke="#101111ff" />
                     <YAxis stroke="#6b7280" />
                     <Tooltip />
-                    <Bar dataKey="total" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                    {/* 🔥 CAMBIO AQUÍ: total -> total_vendido */}
+                   <Bar dataKey="total_vendido" fill="#2b09a5ff" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <p style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>
+                <p style={{ textAlign: 'center', color: '#141414ff', padding: '2rem' }}>
                   No hay datos de categorías
                 </p>
               )}
@@ -153,7 +154,7 @@ const Dashboard = ({ onLogout }) => {
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <p style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>
+                <p style={{ textAlign: 'center', color: '#141eadff', padding: '2rem' }}>
                   No hay datos de ventas por método de pago
                 </p>
               )}
@@ -187,7 +188,7 @@ const Dashboard = ({ onLogout }) => {
                 </tbody>
               </table>
             ) : (
-              <p style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>
+              <p style={{ textAlign: 'center', color: '#08158fff', padding: '2rem' }}>
                 No hay facturas registradas
               </p>
             )}

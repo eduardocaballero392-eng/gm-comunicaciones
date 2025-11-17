@@ -32,7 +32,7 @@ export default function Sidebar({ onLogout }) {
         {/* Logo + menú */}
         <div>
           <div style={{ padding: "2rem 1rem", fontWeight: "500", fontSize: "1.3rem" }}>
-            VASCO TEC
+            GM Comunicaciones
           </div>
 
           <div>

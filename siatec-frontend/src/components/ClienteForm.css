@@ -1,81 +1,293 @@
-/* Fondo oscuro */
+/* src/components/ClienteForm.css */
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
 }
 
-/* Ventana modal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
 .modal {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  animation: fadeIn 0.3s ease-in-out;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  padding: 0;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.25),
+    0 8px 16px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modal h2 {
-  margin-bottom: 1.2rem;
-  font-size: 1.4rem;
-  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin: 0;
+  padding: 25px 30px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  position: relative;
 }
 
-/* Inputs */
+.modal h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 30px;
+  right: 30px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 1px;
+}
+
+.modal form {
+  padding: 30px;
+}
+
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.8rem;
+  position: relative;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.4rem;
-  font-weight: 500;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  color: #374151;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  padding: 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #ffffff;
+  color: #1f2937;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-/* Botones */
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 
+    0 0 0 4px rgba(102, 126, 234, 0.1),
+    0 4px 12px rgba(102, 126, 234, 0.2);
+  background: #fafbfc;
+  transform: translateY(-1px);
+}
+
+.form-group input::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.form-group input:required + label::after {
+  content: " *";
+  color: #ef4444;
+}
+
 .form-actions {
   display: flex;
+  gap: 1rem;
   justify-content: flex-end;
-  gap: 0.8rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.btn-guardar, .btn-cancelar {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 120px;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-guardar {
-  background: #4f46e5;
-  color: #fff;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 
+    0 4px 12px rgba(16, 185, 129, 0.3),
+    0 2px 4px rgba(16, 185, 129, 0.2);
 }
-.btn-guardar:hover { background: #4338ca; }
+
+.btn-guardar:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 20px rgba(16, 185, 129, 0.4),
+    0 4px 8px rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.btn-guardar:active {
+  transform: translateY(0);
+}
 
 .btn-cancelar {
-  background: #f87171;
-  color: #fff;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  box-shadow: 
+    0 4px 12px rgba(239, 68, 68, 0.3),
+    0 2px 4px rgba(239, 68, 68, 0.2);
 }
-.btn-cancelar:hover { background: #ef4444; }
 
-/* Animación */
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+.btn-cancelar:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 20px rgba(239, 68, 68, 0.4),
+    0 4px 8px rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.btn-cancelar:active {
+  transform: translateY(0);
+}
+
+/* Efectos de partículas en los botones */
+.btn-guardar::before, .btn-cancelar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-guardar:hover::before, .btn-cancelar:hover::before {
+  left: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 15px;
+  }
+  
+  .modal {
+    max-width: 100%;
+    margin: 20px;
+  }
+  
+  .modal h2 {
+    padding: 20px 25px;
+    font-size: 1.3rem;
+  }
+  
+  .modal form {
+    padding: 25px;
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 0.8rem;
+  }
+  
+  .btn-guardar, .btn-cancelar {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal form {
+    padding: 20px;
+  }
+  
+  .modal h2 {
+    padding: 18px 20px;
+    font-size: 1.2rem;
+  }
+  
+  .form-group input {
+    padding: 12px 14px;
+  }
+  
+  .btn-guardar, .btn-cancelar {
+    padding: 12px 20px;
+  }
+}
+
+/* Estados de validación */
+.form-group input:invalid:not(:focus):not(:placeholder-shown) {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.form-group input:valid:not(:focus):not(:placeholder-shown) {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+/* Loading state para el formulario */
+.form-loading .form-group input {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.form-loading .btn-guardar::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

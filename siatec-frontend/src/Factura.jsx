@@ -83,6 +83,9 @@ export default function Factura() {
       
       if (response.ok) {
         alert(`✅ Factura guardada correctamente - ID: ${result.facturaId}`);
+        // 🔥 REDIRIGIR AL DETALLE DE LA FACTURA
+        navigate(`/factura/${result.facturaId}`);
+        
         // Limpiar carrito y selecciones
         setCarrito([]);
         setCliente("");

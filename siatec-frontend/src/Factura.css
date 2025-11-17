@@ -1,171 +1,324 @@
+/* Factura.css - Diseño Profesional Manteniendo Estructura */
+
 .factura-container {
-  padding: 30px;
-  font-size: 14px;        /* base más pequeña */
-  max-width: 1400px;      /* ancho del contenedor */
-  margin: auto;
-}
-
-.factura-grid {
-  display: grid;  
-  grid-template-columns: 1fr 1.5fr; /* izquierda chica, derecha grande */
-  gap: 30px;
-}
-
-.factura-col {
-  background: #fff;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  min-height: 600px;
-  font-size: 14px; /* texto interno más compacto */
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* 🔹 Títulos grandes */
+/* Botón Regresar */
+.btn-regresar {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.btn-regresar:hover {
+  background: #4b5563;
+  transform: translateX(-2px);
+}
+
+/* Título Principal */
 .factura-container h1 {
   font-size: 28px;
-  margin-bottom: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 25px;
+  text-align: center;
 }
 
-.factura-container h2 {
-  font-size: 20px;
-  margin-bottom: 15px;
+/* Grid Principal */
+.factura-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  align-items: start;
 }
 
-/* 🔹 Barra de datos */
+/* Columnas */
+.factura-col {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.factura-col.izquierda {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.factura-col.derecha {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+}
+
+/* Barra de Datos Superior */
 .factura-datos {
   display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f1f5f9;
 }
 
-/* 🔹 Inputs y selects compactos */
-.input-corto,
-.input-busqueda,
-.input-cantidad,
-select {
-  padding: 6px 10px;
-  font-size: 13px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  width: auto;
+/* Inputs y Selects */
+.input-corto, select {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  min-width: 150px;
+  background: white;
+  transition: all 0.3s ease;
 }
 
+.input-corto:focus, select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Búsqueda */
 .input-busqueda {
   width: 100%;
-  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  background: white;
+  transition: all 0.3s ease;
 }
 
-/* 🔹 Botones compactos */
-.btn-imprimir,
-.btn-agregar,
-.btn-eliminar,
-.btn-regresar {
-  font-size: 13px;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+.input-busqueda:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.btn-imprimir {
-  background: #007bff;
-  color: white;
-}
-.btn-imprimir:hover {
-  background: #0056b3;
-}
-
-.btn-agregar {
-  background: #28a745;
-  color: white;
-}
-.btn-agregar:hover {
-  background: #1e7e34;
-}
-
-.btn-eliminar {
-  background: #dc3545;
-  color: white;
-}
-.btn-eliminar:hover {
-  background: #a71d2a;
-}
-
-.btn-regresar {
-  background: #444;
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-.btn-regresar:hover {
-  background: #222;
-}
-
-/* 🔹 Tablas compactas */
-.tabla-productos,
-.tabla-carrito {
+/* Tablas */
+.tabla-productos, .tabla-carrito {
   width: 100%;
   border-collapse: collapse;
+  font-size: 14px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.tabla-productos th, .tabla-carrito th {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c73e6 100%);
+  color: white;
+  padding: 12px 8px;
+  text-align: center;
+  font-weight: 600;
   font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.tabla-productos th,
-.tabla-carrito th {
-  background: #6491e6;
-  padding: 8px;
-  text-align: center;       /* encabezados centrados */
-  border-bottom: 2px solid #ddd;
-}
-
-.tabla-productos td,
-.tabla-carrito td {
-  padding: 6px;
-  border-bottom: 1px solid #ddd;
-  text-align: center;       /* 🔹 todo centrado */
+.tabla-productos td, .tabla-carrito td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: center;
   vertical-align: middle;
 }
 
-/* 🔹 Precios y subtotales centrados y en una sola línea */
-.tabla-productos td:nth-child(2),
-.tabla-carrito td:nth-child(3),
-.tabla-carrito td:nth-child(4) {
-  white-space: nowrap;
-  text-align: center;   /* centrado */
-  font-weight: bold;
-  font-size: 14px;
+.tabla-productos tbody tr:hover, .tabla-carrito tbody tr:hover {
+  background: #f8fafc;
 }
 
-.btn-guardar {
-  background: #ff9800;
-  color: white;
-  font-size: 13px;
-  padding: 6px 12px;
-  border: none;
+/* Input Cantidad */
+.input-cantidad {
+  width: 70px;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
-  cursor: pointer;
-}
-
-.btn-guardar:hover {
-  background: #e68900;
-}
-
-/* 🔹 Botón Guardar - Compacto y consistente con el diseño */
-.btn-guardar {
-  background: #ff9800;
-  color: white;
   font-size: 13px;
-  padding: 6px 12px;
+  text-align: center;
+  background: white;
+}
+
+.input-cantidad:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+/* Botones */
+.btn-agregar, .btn-eliminar, .btn-guardar, .btn-imprimir {
+  padding: 8px 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 13px;
   cursor: pointer;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.btn-agregar {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.btn-agregar:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+}
+
+.btn-agregar:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-eliminar {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 6px 10px;
+}
+
+.btn-eliminar:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-1px);
+}
+
+.btn-guardar {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  padding: 10px 20px;
 }
 
 .btn-guardar:hover {
-  background: #e68900;
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  transform: translateY(-1px);
+}
+
+.btn-imprimir {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  padding: 10px 20px;
+}
+
+.btn-imprimir:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-1px);
+}
+
+/* Total de la Factura */
+.tabla-carrito tr:last-child {
+  background: #f8fafc;
+  font-weight: 700;
+}
+
+.tabla-carrito tr:last-child td {
+  color: #1e293b;
+  font-size: 15px;
+  border-top: 2px solid #e2e8f0;
+}
+
+/* Mensaje carrito vacío */
+.factura-col.derecha p {
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+  padding: 40px 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 2px dashed #d1d5db;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .factura-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .factura-container {
+    padding: 15px;
+  }
+  
+  .factura-col {
+    padding: 20px;
+  }
+  
+  .factura-datos {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .input-corto, select {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .btn-guardar, .btn-imprimir {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .tabla-productos, .tabla-carrito {
+    font-size: 13px;
+  }
+  
+  .tabla-productos th, 
+  .tabla-carrito th,
+  .tabla-productos td,
+  .tabla-carrito td {
+    padding: 8px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .factura-container h1 {
+    font-size: 24px;
+  }
+  
+  .factura-col {
+    padding: 15px;
+  }
+  
+  .btn-agregar, .btn-eliminar {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .input-cantidad {
+    width: 60px;
+  }
+}
+
+/* Scroll para tablas largas */
+.tabla-productos, .tabla-carrito {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Estados de hover mejorados */
+.btn-agregar:hover, 
+.btn-eliminar:hover, 
+.btn-guardar:hover, 
+.btn-imprimir:hover,
+.btn-regresar:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
