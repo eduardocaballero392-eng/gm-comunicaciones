@@ -66,6 +66,14 @@ app.post("/login", (req, res) => {
   });
 });
 
+// Ruta para listar usuarios (sin contraseñas)
+app.get("/usuarios", (req, res) => {
+  db.query("SELECT id, nombre, email, rol FROM usuarios ORDER BY rol, nombre", (err, results) => {
+    if (err) return res.status(500).json({ error: "Error de servidor." });
+    res.json(results);
+  });
+});
+
 // ---------------- RUTAS CLIENTES ----------------
 app.get("/clientes", (req, res) => {
   db.query("SELECT * FROM clientes", (err, results) => {

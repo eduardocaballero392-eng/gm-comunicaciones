@@ -54,7 +54,7 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2>Bienvenido a GM Comunnicaciones</h2>
+        <h2>Bienvenido a GM Comunicaciones</h2>
         <p>Inicia sesión para continuar</p>
 
         <form onSubmit={handleSubmit}>

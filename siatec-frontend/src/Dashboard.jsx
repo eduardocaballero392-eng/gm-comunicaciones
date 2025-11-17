@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./Dashboard.css";
+import "./dashboard.css";
 import Sidebar from "./components/Sidebar";
 import { apiRequest } from "./config";
 import {
