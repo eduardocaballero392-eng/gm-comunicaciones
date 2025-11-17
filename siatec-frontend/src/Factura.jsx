@@ -1,6 +1,6 @@
 // src/Factura.jsx
 import React, { useState, useEffect } from "react";
-import "./factura.css";
+import "./Factura.css";
 import { FaTrash, FaPrint, FaArrowLeft, FaSave } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "./config";
