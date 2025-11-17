@@ -28,8 +28,15 @@ db.connect((err) => {
 app.use(cors());
 app.use(express.json());
 
+// Middleware de logging para depuración
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
 // ---------------- RUTAS USUARIOS ----------------
-app.post("/register", (req, res) => {
+// Función para registrar usuario (reutilizable)
+const handleRegister = (req, res) => {
   const { nombre, email, password, rol } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
@@ -41,9 +48,14 @@ app.post("/register", (req, res) => {
       res.json({ message: "Usuario registrado correctamente." });
     }
   );
-});
+};
 
-app.post("/login", (req, res) => {
+// Rutas de registro (ambas para compatibilidad)
+app.post("/register", handleRegister);
+app.post("/api/register", handleRegister);
+
+// Función para manejar login (reutilizable)
+const handleLogin = (req, res) => {
   const { email, password } = req.body;
 
   db.query("SELECT * FROM usuarios WHERE email = ?", [email], (err, results) => {
@@ -64,18 +76,32 @@ app.post("/login", (req, res) => {
       nombre: user.nombre,
     });
   });
-});
+};
 
-// Ruta para listar usuarios (sin contraseñas)
-app.get("/usuarios", (req, res) => {
+// Rutas de login (ambas para compatibilidad)
+app.post("/login", handleLogin);
+app.post("/api/login", handleLogin);
+
+// Función para listar usuarios (reutilizable)
+const handleListUsuarios = (req, res) => {
   db.query("SELECT id, nombre, email, rol FROM usuarios ORDER BY rol, nombre", (err, results) => {
     if (err) return res.status(500).json({ error: "Error de servidor." });
     res.json(results);
   });
-});
+};
+
+// Rutas para listar usuarios (ambas para compatibilidad)
+app.get("/usuarios", handleListUsuarios);
+app.get("/api/usuarios", handleListUsuarios);
 
 // ---------------- RUTAS CLIENTES ----------------
 app.get("/clientes", (req, res) => {
+  db.query("SELECT * FROM clientes", (err, results) => {
+    if (err) return res.status(500).json({ error: "Error de servidor." });
+    res.json(results);
+  });
+});
+app.get("/api/clientes", (req, res) => {
   db.query("SELECT * FROM clientes", (err, results) => {
     if (err) return res.status(500).json({ error: "Error de servidor." });
     res.json(results);
@@ -90,8 +116,27 @@ app.get("/clientes/:id", (req, res) => {
     res.json(results[0]);
   });
 });
+app.get("/api/clientes/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("SELECT * FROM clientes WHERE id = ?", [id], (err, results) => {
+    if (err) return res.status(500).json({ error: "Error de servidor." });
+    if (results.length === 0) return res.status(404).json({ error: "Cliente no encontrado" });
+    res.json(results[0]);
+  });
+});
 
 app.post("/clientes", (req, res) => {
+  const { nombre, email, telefono, direccion } = req.body;
+  db.query(
+    "INSERT INTO clientes (nombre, email, telefono, direccion) VALUES (?,?,?,?)",
+    [nombre, email, telefono, direccion],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: "Error al crear cliente." });
+      res.json({ message: "Cliente creado correctamente", id: result.insertId });
+    }
+  );
+});
+app.post("/api/clientes", (req, res) => {
   const { nombre, email, telefono, direccion } = req.body;
   db.query(
     "INSERT INTO clientes (nombre, email, telefono, direccion) VALUES (?,?,?,?)",
@@ -117,8 +162,30 @@ app.put("/clientes/:id", (req, res) => {
     }
   );
 });
+app.put("/api/clientes/:id", (req, res) => {
+  const { id } = req.params;
+  const { nombre, email, telefono, direccion } = req.body;
+
+  db.query(
+    "UPDATE clientes SET nombre = ?, email = ?, telefono = ?, direccion = ? WHERE id = ?",
+    [nombre, email, telefono, direccion, id],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: "Error al actualizar cliente." });
+      if (result.affectedRows === 0) return res.status(404).json({ error: "Cliente no encontrado" });
+      res.json({ message: "Cliente actualizado correctamente" });
+    }
+  );
+});
 
 app.delete("/clientes/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("DELETE FROM clientes WHERE id = ?", [id], (err, result) => {
+    if (err) return res.status(500).json({ error: "Error al eliminar cliente." });
+    if (result.affectedRows === 0) return res.status(404).json({ error: "Cliente no encontrado" });
+    res.json({ message: "Cliente eliminado correctamente" });
+  });
+});
+app.delete("/api/clientes/:id", (req, res) => {
   const { id } = req.params;
   db.query("DELETE FROM clientes WHERE id = ?", [id], (err, result) => {
     if (err) return res.status(500).json({ error: "Error al eliminar cliente." });
@@ -129,6 +196,37 @@ app.delete("/clientes/:id", (req, res) => {
 
 // ---------------- RUTAS FACTURAS ----------------
 app.post("/facturas", (req, res) => {
+  const { cliente_id, usuario_id, metodo, total, carrito } = req.body;
+
+  const productosJSON = JSON.stringify(carrito);
+
+  db.query("SELECT MAX(correlativo) AS ultimo FROM facturas", (err, result) => {
+    if (err) {
+      console.error("❌ Error al obtener correlativo:", err);
+      return res.status(500).json({ error: "Error al generar correlativo" });
+    }
+
+    const nuevoCorrelativo = (result[0].ultimo || 0) + 1;
+
+    db.query(
+      "INSERT INTO facturas (cliente_id, usuario_id, correlativo, productos, metodo, total, fecha) VALUES (?, ?, ?, ?, ?, ?, NOW())",
+      [cliente_id, usuario_id || 1, nuevoCorrelativo, productosJSON, metodo, total],
+      (err, result) => {
+        if (err) {
+          console.error("❌ Error al guardar factura:", err);
+          return res.status(500).json({ error: "Error al guardar factura" });
+        }
+
+        res.json({ 
+          message: "Factura guardada con éxito", 
+          facturaId: result.insertId,
+          correlativo: nuevoCorrelativo
+        });
+      }
+    );
+  });
+});
+app.post("/api/facturas", (req, res) => {
   const { cliente_id, usuario_id, metodo, total, carrito } = req.body;
 
   const productosJSON = JSON.stringify(carrito);
@@ -183,6 +281,28 @@ app.get("/facturas/:id", (req, res) => {
     }
   );
 });
+app.get("/api/facturas/:id", (req, res) => {
+  const { id } = req.params;
+
+  db.query(
+    "SELECT f.*, c.nombre AS cliente_nombre FROM facturas f JOIN clientes c ON f.cliente_id = c.id WHERE f.id = ?",
+    [id],
+    (err, results) => {
+      if (err) {
+        console.error("❌ Error al obtener factura:", err);
+        return res.status(500).json({ error: "Error al obtener factura" });
+      }
+      if (results.length === 0) {
+        return res.status(404).json({ error: "Factura no encontrada" });
+      }
+
+      const factura = results[0];
+      factura.productos = JSON.parse(factura.productos || "[]");
+
+      res.json(factura);
+    }
+  );
+});
 
 // ---------------- RUTAS PRODUCTOS ----------------
 app.get("/productos", (req, res) => {
@@ -194,8 +314,25 @@ app.get("/productos", (req, res) => {
     res.json(results);
   });
 });
+app.get("/api/productos", (req, res) => {
+  db.query("SELECT * FROM productos", (err, results) => {
+    if (err) {
+      console.error("Error al obtener productos:", err);
+      return res.status(500).json({ error: "Error de servidor." });
+    }
+    res.json(results);
+  });
+});
 
 app.get("/productos/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("SELECT * FROM productos WHERE id = ?", [id], (err, results) => {
+    if (err) return res.status(500).json({ error: "Error de servidor." });
+    if (results.length === 0) return res.status(404).json({ error: "Producto no encontrado" });
+    res.json(results[0]);
+  });
+});
+app.get("/api/productos/:id", (req, res) => {
   const { id } = req.params;
   db.query("SELECT * FROM productos WHERE id = ?", [id], (err, results) => {
     if (err) return res.status(500).json({ error: "Error de servidor." });
@@ -215,9 +352,36 @@ app.post("/productos", (req, res) => {
     }
   );
 });
+app.post("/api/productos", (req, res) => {
+  const { nombre, precio, stock, categoria_id } = req.body;
+  db.query(
+    "INSERT INTO productos (nombre, precio, stock, categoria_id) VALUES (?,?,?,?)",
+    [nombre, precio, stock, categoria_id],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: "Error al crear producto." });
+      res.json({ message: "Producto creado correctamente", id: result.insertId });
+    }
+  );
+});
 
 // ✅ Obtener todas las facturas (para la tabla principal)
 app.get("/facturas", (req, res) => {
+  db.query(
+    `SELECT f.id, f.correlativo, c.nombre AS cliente_nombre, f.total, 
+            COALESCE(f.metodo, 'N/A') AS metodo, f.fecha
+     FROM facturas f
+     JOIN clientes c ON f.cliente_id = c.id
+     ORDER BY f.fecha DESC`,
+    (err, results) => {
+      if (err) {
+        console.error("❌ Error al obtener facturas:", err);
+        return res.status(500).json({ error: "Error al obtener facturas" });
+      }
+      res.json(results);
+    }
+  );
+});
+app.get("/api/facturas", (req, res) => {
   db.query(
     `SELECT f.id, f.correlativo, c.nombre AS cliente_nombre, f.total, 
             COALESCE(f.metodo, 'N/A') AS metodo, f.fecha
@@ -248,6 +412,20 @@ app.put("/productos/:id", (req, res) => {
     }
   );
 });
+app.put("/api/productos/:id", (req, res) => {
+  const { id } = req.params;
+  const { nombre, precio, stock, categoria_id } = req.body;
+
+  db.query(
+    "UPDATE productos SET nombre = ?, precio = ?, stock = ?, categoria_id = ? WHERE id = ?",
+    [nombre, precio, stock, categoria_id, id],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: "Error al actualizar producto." });
+      if (result.affectedRows === 0) return res.status(404).json({ error: "Producto no encontrado" });
+      res.json({ message: "Producto actualizado correctamente" });
+    }
+  );
+});
 
 app.delete("/productos/:id", (req, res) => {
   const { id } = req.params;
@@ -257,9 +435,18 @@ app.delete("/productos/:id", (req, res) => {
     res.json({ message: "Producto eliminado correctamente" });
   });
 });
+app.delete("/api/productos/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("DELETE FROM productos WHERE id = ?", [id], (err, result) => {
+    if (err) return res.status(500).json({ error: "Error al eliminar producto." });
+    if (result.affectedRows === 0) return res.status(404).json({ error: "Producto no encontrado" });
+    res.json({ message: "Producto eliminado correctamente" });
+  });
+});
 
 // ---------------- DASHBOARD SUMMARY ----------------
-app.get("/dashboard/summary", (req, res) => {
+// Función para manejar dashboard summary (reutilizable)
+const handleDashboardSummary = (req, res) => {
   const summary = {};
 
   // Función para continuar el proceso
@@ -321,29 +508,33 @@ app.get("/dashboard/summary", (req, res) => {
         summary.totalFacturas = facturas[0]?.totalFacturas || 0;
 
         // Top Categorías Vendidas (ELIMINA DUPLICADOS POR NOMBRE)
-db.query(`
-  SELECT 
-    MAX(c.nombre) AS categoria,  -- 👈 Usa MAX para forzar un solo valor
-    COUNT(DISTINCT f.id) AS total_vendido
-  FROM facturas f
-  JOIN productos p ON JSON_CONTAINS(f.productos, JSON_OBJECT('id', p.id))
-  JOIN categorias c ON p.categoria_id = c.id
-  GROUP BY c.nombre  -- 👈 Agrupa solo por nombre
-  ORDER BY total_vendido DESC
-  LIMIT 4
-`, (err, categorias) => {
-  if (err) {
-    console.warn("⚠️ Error en categorías:", err);
-    summary.ventasPorCategoria = [];
-  } else {
-    summary.ventasPorCategoria = categorias || [];
-  }
-  continuarProceso();
-});
+        db.query(`
+          SELECT 
+            MAX(c.nombre) AS categoria,  -- 👈 Usa MAX para forzar un solo valor
+            COUNT(DISTINCT f.id) AS total_vendido
+          FROM facturas f
+          JOIN productos p ON JSON_CONTAINS(f.productos, JSON_OBJECT('id', p.id))
+          JOIN categorias c ON p.categoria_id = c.id
+          GROUP BY c.nombre  -- 👈 Agrupa solo por nombre
+          ORDER BY total_vendido DESC
+          LIMIT 4
+        `, (err, categorias) => {
+          if (err) {
+            console.warn("⚠️ Error en categorías:", err);
+            summary.ventasPorCategoria = [];
+          } else {
+            summary.ventasPorCategoria = categorias || [];
+          }
+          continuarProceso();
+        });
       });
     });
   });
-});
+};
+
+// Rutas para dashboard summary (ambas para compatibilidad)
+app.get("/dashboard/summary", handleDashboardSummary);
+app.get("/api/dashboard/summary", handleDashboardSummary);
 
 // Agrega esto en tu server.js
 app.get('/', (req, res) => {
