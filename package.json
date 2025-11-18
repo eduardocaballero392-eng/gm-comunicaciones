@@ -1,29 +1,27 @@
 {
   "name": "facturacion-backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "API modular lista para desplegar en Vercel con datos en memoria y soporte futuro para MySQL.",
+  "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "mostrar-usuarios": "node mostrar-usuarios.js",
-    "crear-usuario-prueba": "node crear-usuario-prueba.js"
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
   },
-  "keywords": [],
+  "keywords": [
+    "express",
+    "vercel",
+    "facturacion",
+    "api"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.3"
-  },
-  "devDependencies": {
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.12"
   }
 }

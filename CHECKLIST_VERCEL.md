@@ -1,84 +1,50 @@
-# ✅ Checklist para Desplegar en Vercel
+# ✅ Checklist para desplegar (backend + frontend)
 
-## Backend (facturacion-backend)
+## Backend (facturacion-backend raíz)
 
-### ✅ Completado:
-- [x] Archivo `vercel.json` creado
-- [x] Archivo `api/index.js` creado con todas las rutas
-- [x] Todas las rutas configuradas con prefijo `/api`
-- [x] Variables de entorno configuradas en el código
-- [x] CORS habilitado
+### ✅ Ya listo en código
+- [x] `vercel.json` apunta a `api/index.js`
+- [x] `api/index.js` reutiliza `src/app.js`
+- [x] Rutas namespaced bajo `/api`
+- [x] Datos simulados listos para trabajar sin MySQL
 
-### ⚠️ Pendiente (debes hacerlo):
-- [ ] **Configurar variables de entorno en Vercel:**
-  - `DB_HOST` - Host de tu base de datos MySQL
-  - `DB_USER` - Usuario de MySQL
-  - `DB_PASSWORD` - Contraseña de MySQL
-  - `DB_NAME` - Nombre de la base de datos (ej: `facturacion`)
-  - `SECRET_KEY` - Clave secreta para JWT
+### ⚙️ Configuración pendiente en Vercel
+- [ ] Crear un proyecto nuevo y conectar este repositorio
+- [ ] Variables mínimas:
+  - `SECRET_KEY`
+  - `DATA_SOURCE=memory`
+- [ ] Si más adelante activas MySQL agrega:
+  - `DB_HOST`
+  - `DB_USER`
+  - `DB_PASSWORD`
+  - `DB_NAME`
 
-- [ ] **Asegurar que tu base de datos MySQL sea accesible desde internet**
-  - No puede ser `localhost`
-  - Usa un servicio en la nube como:
-    - PlanetScale (recomendado, gratis)
-    - Railway
-    - Render
-    - AWS RDS
-    - Google Cloud SQL
+### ☁️ Pasos para desplegar backend
+1. `npm install`
+2. `vercel login`
+3. `vercel --prod` (o desde el dashboard conectando GitHub)
+4. Definir variables en **Settings → Environment Variables**
+5. Validar:
+   - `GET https://tu-api.vercel.app/api/health`
+   - `POST https://tu-api.vercel.app/api/login`
+   - `GET https://tu-api.vercel.app/api/dashboard/summary`
 
-- [ ] **Desplegar el backend en Vercel**
-  - Conecta tu repositorio
-  - O usa `vercel` desde la terminal
+## Frontend (`siatec-frontend/`)
 
-## Frontend (siatec-frontend)
+### ⚙️ Configuración en Vercel
+- [ ] Crear un segundo proyecto apuntando a la carpeta `siatec-frontend`
+- [ ] Variables:
+  - `VITE_API_URL` = URL del backend desplegado (sin `/` final)
 
-### ✅ Completado:
-- [x] Archivo `src/config.js` creado
-- [x] Todas las llamadas a la API actualizadas
-- [x] Configuración para usar variables de entorno
+### Pasos sugeridos
+1. `cd siatec-frontend`
+2. `npm install`
+3. `vercel --prod` (elige el scope del proyecto frontend)
 
-### ⚠️ Pendiente (debes hacerlo):
-- [ ] **Desplegar el frontend en Vercel** (proyecto separado)
-  - Crea un nuevo proyecto en Vercel
-  - Selecciona la carpeta `siatec-frontend`
-  - Configura la variable de entorno:
-    - `VITE_API_URL` = URL de tu backend desplegado (ej: `https://tu-backend.vercel.app`)
+## 🧷 Consejos adicionales
+- Cuando migres a MySQL, implementa un adaptador en `src/data/` y cambia `DATA_SOURCE`.
+- Usa los mismos valores de entorno en local y prod para evitar sorpresas.
+- Para depurar errores en Vercel usa `vercel logs <url> --since 1h`.
 
-## Pasos Finales
-
-1. **Despliega el backend primero:**
-   ```bash
-   vercel
-   ```
-   O desde el dashboard de Vercel conectando tu repositorio
-
-2. **Obtén la URL de tu backend** (ej: `https://facturacion-backend.vercel.app`)
-
-3. **Despliega el frontend:**
-   ```bash
-   cd siatec-frontend
-   vercel
-   ```
-   Cuando te pregunte, agrega la variable:
-   - `VITE_API_URL` = `https://tu-backend.vercel.app`
-
-4. **Verifica que todo funcione:**
-   - Visita la URL del frontend
-   - Intenta hacer login
-   - Verifica que las rutas del backend respondan
-
-## Problemas Comunes
-
-### Error: "Cannot connect to database"
-- Verifica que `DB_HOST` no sea `localhost`
-- Asegúrate de que tu base de datos permita conexiones externas
-- Verifica las credenciales en las variables de entorno
-
-### Error: "CORS policy"
-- Ya está configurado en `api/index.js` con `app.use(cors())`
-- Si persiste, verifica que la URL del frontend esté permitida
-
-### El frontend no se conecta al backend
-- Verifica que `VITE_API_URL` esté configurada correctamente
-- Asegúrate de que la URL termine sin `/` (ej: `https://backend.vercel.app` no `https://backend.vercel.app/`)
+Con estos pasos tendrás el backend y el frontend desplegados por separado pero conectados entre sí mediante `VITE_API_URL`. 
 
