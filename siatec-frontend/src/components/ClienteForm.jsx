@@ -29,7 +29,7 @@ export default function ClienteForm({ cliente, onSave, onCancel }) {
         <h2>{cliente ? "Editar Cliente" : "Nuevo Cliente"}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Nombre</label>
+            <label>NOMBRE</label>
             <input
               type="text"
               name="nombre"
@@ -40,7 +40,7 @@ export default function ClienteForm({ cliente, onSave, onCancel }) {
           </div>
 
           <div className="form-group">
-            <label>Email</label>
+            <label>EMAIL</label>
             <input
               type="email"
               name="email"
@@ -51,7 +51,7 @@ export default function ClienteForm({ cliente, onSave, onCancel }) {
           </div>
 
           <div className="form-group">
-            <label>Teléfono</label>
+            <label>TELÉFONO</label>
             <input
               type="text"
               name="telefono"
@@ -61,7 +61,7 @@ export default function ClienteForm({ cliente, onSave, onCancel }) {
           </div>
 
           <div className="form-group">
-            <label>Dirección</label>
+            <label>DIRECCIÓN</label>
             <input
               type="text"
               name="direccion"
@@ -71,9 +71,9 @@ export default function ClienteForm({ cliente, onSave, onCancel }) {
           </div>
 
           <div className="form-actions">
-            <button type="submit" className="btn-guardar">Guardar</button>
+            <button type="submit" className="btn-guardar">GUARDAR</button>
             <button type="button" className="btn-cancelar" onClick={onCancel}>
-              Cancelar
+              CANCELAR
             </button>
           </div>
         </form>

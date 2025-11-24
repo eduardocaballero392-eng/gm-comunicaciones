@@ -29,7 +29,7 @@ export default function ProductoForm({ producto, onSave, onCancel }) {
         <h2>{producto ? "Editar Producto" : "Nuevo Producto"}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Nombre</label>
+            <label>NOMBRE</label>
             <input
               type="text"
               name="nombre"
@@ -40,7 +40,7 @@ export default function ProductoForm({ producto, onSave, onCancel }) {
           </div>
 
           <div className="form-group">
-            <label>Precio</label>
+            <label>PRECIO</label>
             <input
               type="number"
               name="precio"
@@ -51,7 +51,7 @@ export default function ProductoForm({ producto, onSave, onCancel }) {
           </div>
 
           <div className="form-group">
-            <label>Stock</label>
+            <label>STOCK</label>
             <input
               type="number"
               name="stock"
@@ -61,19 +61,19 @@ export default function ProductoForm({ producto, onSave, onCancel }) {
           </div>
 
           <div className="form-group">
-            <label>Categoría ID</label>
+            <label>CATEGORÍA ID</label>
             <input
               type="number"
-              name="categoria_id"   // 👈 ahora manda el id correcto
+              name="categoria_id"
               value={formData.categoria_id}
               onChange={handleChange}
             />
           </div>
 
           <div className="form-actions">
-            <button type="submit" className="btn-guardar">Guardar</button>
+            <button type="submit" className="btn-guardar">GUARDAR</button>
             <button type="button" className="btn-cancelar" onClick={onCancel}>
-              Cancelar
+              CANCELAR
             </button>
           </div>
         </form>

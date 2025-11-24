@@ -3,23 +3,31 @@ import React, { useState, useEffect } from "react";
 import ProductoForm from "./components/ProductoForm";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "./config";
+import "./Producto.css";
 
 export default function Producto() {
   const [productos, setProductos] = useState([]);
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // 🔹 Obtener productos desde backend
+  // Obtener productos desde backend
   const fetchProductos = async () => {
     try {
+      setLoading(true);
+      setError(null);
       const res = await fetch(apiRequest("/productos"));
       if (!res.ok) throw new Error("Error en la respuesta del servidor");
       const data = await res.json();
       setProductos(data);
     } catch (err) {
       console.error("Error al cargar productos:", err);
+      setError("No se pudieron cargar los productos");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -27,9 +35,10 @@ export default function Producto() {
     fetchProductos();
   }, []);
 
-  // 🔹 Guardar producto (Agregar / Editar)
+  // Guardar producto (Agregar / Editar)
   const handleSave = async (producto) => {
     try {
+      setError(null);
       if (producto.id) {
         await fetch(apiRequest(`/productos/${producto.id}`), {
           method: "PUT",
@@ -48,21 +57,24 @@ export default function Producto() {
       setEditing(null);
     } catch (err) {
       console.error("Error al guardar producto:", err);
+      setError("Error al guardar el producto");
     }
   };
 
-  // 🔹 Eliminar producto
+  // Eliminar producto
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Seguro que quieres eliminar este producto?")) return;
+    if (!window.confirm("¿Estás seguro de que quieres eliminar este producto?")) return;
     try {
+      setError(null);
       await fetch(apiRequest(`/productos/${id}`), { method: "DELETE" });
       fetchProductos();
     } catch (err) {
       console.error("Error al eliminar producto:", err);
+      setError("Error al eliminar el producto");
     }
   };
 
-  // 🔹 Filtrar productos según búsqueda
+  // Filtrar productos según búsqueda
   const productosFiltrados = productos.filter((p) =>
     Object.values(p)
       .join(" ")
@@ -70,133 +82,141 @@ export default function Producto() {
       .includes(search.toLowerCase())
   );
 
+  if (loading) {
+    return (
+      <div className="producto-container">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Cargando productos...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: "2rem" }}>
-      {/* Título + botón volver */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem",
-        }}
-      >
-        <h1>Productos</h1>
-        <button
-          onClick={() => navigate("/dashboard")}
-          style={{
-            padding: "0.5rem 1rem",
-            backgroundColor: "#818cf8",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-          }}
+    <div className="producto-container">
+      {/* Header */}
+      <div className="producto-header">
+        <div className="header-content">
+          <div className="title-section">
+            <h1>📦 Productos</h1>
+            <p>Administra los productos de GM Comunicaciones</p>
+          </div>
+          <button 
+            onClick={() => navigate("/dashboard")} 
+            className="btn-back"
+          >
+            ← Volver al Dashboard
+          </button>
+        </div>
+      </div>
+
+      {/* Barra de herramientas */}
+      <div className="toolbar">
+        <div className="search-container">
+          <span className="search-icon">🔍</span>
+          <input
+            type="text"
+            placeholder="Buscar producto por nombre, precio, stock..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="search-input"
+          />
+        </div>
+        <button 
+          onClick={() => setShowForm(true)} 
+          className="btn-primary"
         >
-          ← Volver al Dashboard
+          <span className="btn-icon">➕</span>
+          Nuevo Producto
         </button>
       </div>
 
-      {/* 🔍 Buscador */}
-      <input
-        type="text"
-        placeholder="🔍 Buscar producto..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{
-          marginBottom: "1rem",
-          padding: "0.6rem 1rem",
-          width: "100%",
-          maxWidth: "350px",
-          border: "1px solid #ccc",
-          borderRadius: "6px",
-        }}
-      />
-
-      <button
-        onClick={() => setShowForm(true)}
-        style={{
-          marginBottom: "1rem",
-          marginLeft: "1rem",
-          padding: "0.5rem 1rem",
-          backgroundColor: "#4f46e5",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-        }}
-      >
-        Nuevo Producto
-      </button>
-
-      {/* Formulario modal */}
-      {showForm && (
-        <ProductoForm
-          producto={editing}
-          onSave={handleSave}
-          onCancel={() => {
-            setShowForm(false);
-            setEditing(null);
-          }}
-        />
+      {/* Mensaje de error */}
+      {error && (
+        <div className="error-message">
+          <span className="error-icon">⚠️</span>
+          {error}
+        </div>
       )}
 
       {/* Tabla de productos */}
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th style={{ padding: "0.8rem" }}>Nombre</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Categoría ID</th> {/* ✅ corregido */}
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {productosFiltrados.length > 0 ? (
-            productosFiltrados.map((p) => (
-              <tr key={p.id} style={{ borderBottom: "1px solid #ddd" }}>
-                <td style={{ padding: "0.5rem" }}>{p.nombre}</td>
-                <td>{p.precio}</td>
-                <td>{p.stock}</td>
-                <td>{p.categoria_id}</td> {/* ✅ corregido */}
-                <td>
+      <div className="table-container">
+        <table className="productos-table">
+          <thead>
+            <tr>
+              <th>NOMBRE</th>
+              <th>PRECIO</th>
+              <th>STOCK</th>
+              <th>CATEGORÍA ID</th>
+              <th>ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody>
+            {productosFiltrados.map((producto, index) => (
+              <tr key={producto.id} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
+                <td className="producto-name">{producto.nombre}</td>
+                <td className="producto-precio">S/ {producto.precio}</td>
+                <td className="producto-stock">{producto.stock}</td>
+                <td className="producto-categoria">{producto.categoria_id || 'N/A'}</td>
+                <td className="actions">
                   <button
-                    onClick={() => {
-                      setEditing(p);
-                      setShowForm(true);
-                    }}
-                    style={{
-                      marginRight: "0.3rem",
-                      padding: "0.3rem 0.6rem",
-                      backgroundColor: "#facc15",
-                      border: "none",
-                      borderRadius: "4px",
-                    }}
+                    onClick={() => { setEditing(producto); setShowForm(true); }}
+                    className="btn-edit"
+                    title="Editar producto"
                   >
+                    <span>✏️</span>
                     Editar
                   </button>
                   <button
-                    onClick={() => handleDelete(p.id)}
-                    style={{
-                      padding: "0.3rem 0.6rem",
-                      backgroundColor: "#f87171",
-                      border: "none",
-                      borderRadius: "4px",
-                    }}
+                    onClick={() => handleDelete(producto.id)}
+                    className="btn-delete"
+                    title="Eliminar producto"
                   >
+                    <span>🗑️</span>
                     Eliminar
                   </button>
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" style={{ textAlign: "center", padding: "1rem" }}>
-                No se encontraron productos
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            ))}
+
+            {productosFiltrados.length === 0 && (
+              <tr className="empty-row">
+                <td colSpan="5" className="empty-state">
+                  <div className="empty-content">
+                    <span className="empty-icon">📦</span>
+                    <p>No se encontraron productos</p>
+                    <small>
+                      {search ? 'Intenta con otros términos de búsqueda' : 'Agrega tu primer producto haciendo clic en "Nuevo Producto"'}
+                    </small>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Estadísticas */}
+      <div className="stats-footer">
+        <div className="stat-item">
+          <span className="stat-number">{productos.length}</span>
+          <span className="stat-label">TOTAL PRODUCTOS</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-number">{productosFiltrados.length}</span>
+          <span className="stat-label">MOSTRADOS</span>
+        </div>
+      </div>
+
+      {/* Modal de formulario */}
+      {showForm && (
+        <ProductoForm
+          producto={editing}
+          onSave={handleSave}
+          onCancel={() => { setShowForm(false); setEditing(null); }}
+        />
+      )}
     </div>
   );
 }

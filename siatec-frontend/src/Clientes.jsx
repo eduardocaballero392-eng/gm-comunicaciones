@@ -3,22 +3,41 @@ import React, { useState, useEffect } from "react";
 import ClienteForm from "./components/ClienteForm";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "./config";
-
+import "./components/ClienteForm.css"; 
 export default function Clientes() {
   const [clientes, setClientes] = useState([]);
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [search, setSearch] = useState(""); // 🔹 estado para buscador
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // 🔹 Obtener clientes desde backend
+  // Paleta de colores GM Comunicaciones
+  const colors = {
+    primary: "#1a3e6d",
+    secondary: "#e74c3c",
+    success: "#27ae60",
+    warning: "#f39c12",
+    background: "#f8f9fa",
+    text: "#333333",
+    border: "#e5e7eb"
+  };
+
+  // Obtener clientes desde backend
   const fetchClientes = async () => {
     try {
+      setLoading(true);
+      setError(null);
       const res = await fetch(apiRequest("/clientes"));
+      if (!res.ok) throw new Error("Error al cargar clientes");
       const data = await res.json();
       setClientes(data);
     } catch (err) {
       console.error("Error al cargar clientes:", err);
+      setError("No se pudieron cargar los clientes");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -26,9 +45,10 @@ export default function Clientes() {
     fetchClientes();
   }, []);
 
-  // 🔹 Guardar cliente (Agregar / Editar)
+  // Guardar cliente (Agregar / Editar)
   const handleSave = async (cliente) => {
     try {
+      setError(null);
       if (cliente.id) {
         await fetch(apiRequest(`/clientes/${cliente.id}`), {
           method: "PUT",
@@ -47,21 +67,24 @@ export default function Clientes() {
       setEditing(null);
     } catch (err) {
       console.error("Error al guardar cliente:", err);
+      setError("Error al guardar el cliente");
     }
   };
 
-  // 🔹 Eliminar cliente
+  // Eliminar cliente
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Seguro que quieres eliminar este cliente?")) return;
+    if (!window.confirm("¿Estás seguro de que quieres eliminar este cliente?")) return;
     try {
+      setError(null);
       await fetch(apiRequest(`/clientes/${id}`), { method: "DELETE" });
       fetchClientes();
     } catch (err) {
       console.error("Error al eliminar cliente:", err);
+      setError("Error al eliminar el cliente");
     }
   };
 
-  // 🔹 Filtrar clientes según búsqueda
+  // Filtrar clientes según búsqueda
   const clientesFiltrados = clientes.filter((c) =>
     Object.values(c)
       .join(" ")
@@ -69,35 +92,139 @@ export default function Clientes() {
       .includes(search.toLowerCase())
   );
 
+  if (loading) {
+    return (
+      <div className="clientes-container">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Cargando clientes...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: "2rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-        <h1>Clientes</h1>
-        <button onClick={() => navigate("/dashboard")} style={{ padding: "0.5rem 1rem", backgroundColor: "#818cf8", color: "white", border: "none", borderRadius: "6px" }}>
-          ← Volver al Dashboard
+    <div className="clientes-container">
+      {/* Header */}
+      <div className="clientes-header">
+        <div className="header-content">
+          <div className="title-section">
+            <h1>👥 Gestión de Clientes</h1>
+            <p>Administra los clientes de GM Comunicaciones</p>
+          </div>
+          <button 
+            onClick={() => navigate("/dashboard")} 
+            className="btn-back"
+          >
+            ← Volver al Dashboard
+          </button>
+        </div>
+      </div>
+
+      {/* Barra de herramientas */}
+      <div className="toolbar">
+        <div className="search-container">
+          <span className="search-icon">🔍</span>
+          <input
+            type="text"
+            placeholder="Buscar cliente por nombre, email, teléfono..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="search-input"
+          />
+        </div>
+        <button 
+          onClick={() => setShowForm(true)} 
+          className="btn-primary"
+        >
+          <span className="btn-icon">➕</span>
+          Nuevo Cliente
         </button>
       </div>
 
-      {/* 🔍 Buscador */}
-      <input
-        type="text"
-        placeholder="🔍Buscar cliente..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{
-          marginBottom: "1rem",
-          padding: "0.6rem 1rem",
-          width: "100%",
-          maxWidth: "350px",
-          border: "1px solid #ccc",
-          borderRadius: "6px",
-        }}
-      />
+      {/* Mensaje de error */}
+      {error && (
+        <div className="error-message">
+          <span className="error-icon">⚠️</span>
+          {error}
+        </div>
+      )}
 
-      <button onClick={() => setShowForm(true)} style={{ marginBottom: "1rem", marginLeft: "1rem", padding: "0.5rem 1rem", backgroundColor: "#4f46e5", color: "white", border: "none", borderRadius: "6px" }}>
-        Nuevo Cliente
-      </button>
+      {/* Tabla de clientes */}
+      <div className="table-container">
+        <table className="clientes-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {clientesFiltrados.map((cliente, index) => (
+              <tr key={cliente.id} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
+                <td className="cliente-name">
+                  <span className="name-avatar">
+                    {cliente.nombre?.charAt(0).toUpperCase() || 'C'}
+                  </span>
+                  {cliente.nombre}
+                </td>
+                <td className="cliente-email">{cliente.email}</td>
+                <td className="cliente-phone">{cliente.telefono || 'N/A'}</td>
+                <td className="cliente-address">{cliente.direccion || 'N/A'}</td>
+                <td className="actions">
+                  <button
+                    onClick={() => { setEditing(cliente); setShowForm(true); }}
+                    className="btn-edit"
+                    title="Editar cliente"
+                  >
+                    <span>✏️</span>
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDelete(cliente.id)}
+                    className="btn-delete"
+                    title="Eliminar cliente"
+                  >
+                    <span>🗑️</span>
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
 
+            {clientesFiltrados.length === 0 && (
+              <tr className="empty-row">
+                <td colSpan="5" className="empty-state">
+                  <div className="empty-content">
+                    <span className="empty-icon">👥</span>
+                    <p>No se encontraron clientes</p>
+                    <small>
+                      {search ? 'Intenta con otros términos de búsqueda' : 'Agrega tu primer cliente haciendo clic en "Nuevo Cliente"'}
+                    </small>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Estadísticas */}
+      <div className="stats-footer">
+        <div className="stat-item">
+          <span className="stat-number">{clientes.length}</span>
+          <span className="stat-label">Total Clientes</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-number">{clientesFiltrados.length}</span>
+          <span className="stat-label">Mostrados</span>
+        </div>
+      </div>
+
+      {/* Modal de formulario */}
       {showForm && (
         <ClienteForm
           cliente={editing}
@@ -105,50 +232,6 @@ export default function Clientes() {
           onCancel={() => { setShowForm(false); setEditing(null); }}
         />
       )}
-
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th style={{ padding: "0.8rem" }}>Nombre</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {clientesFiltrados.map((c) => (
-            <tr key={c.id} style={{ borderBottom: "1px solid #ddd" }}>
-              <td style={{ padding: "0.5rem" }}>{c.nombre}</td>
-              <td>{c.email}</td>
-              <td>{c.telefono}</td>
-              <td>{c.direccion}</td>
-              <td>
-                <button
-                  onClick={() => { setEditing(c); setShowForm(true); }}
-                  style={{ marginRight: "0.3rem", padding: "0.3rem 0.6rem", backgroundColor: "#facc15", border: "none", borderRadius: "4px" }}
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleDelete(c.id)}
-                  style={{ padding: "0.3rem 0.6rem", backgroundColor: "#f87171", border: "none", borderRadius: "4px" }}
-                >
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          ))}
-
-          {clientesFiltrados.length === 0 && (
-            <tr>
-              <td colSpan="5" style={{ textAlign: "center", padding: "1rem" }}>
-                No se encontraron clientes
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
     </div>
   );
 }

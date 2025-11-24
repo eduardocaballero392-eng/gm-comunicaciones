@@ -29,6 +29,20 @@ const Dashboard = ({ onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Paleta de colores corporativa GM Comunicaciones
+  const COLORS = {
+    primary: "#1a3e6d",      // Azul corporativo
+    secondary: "#e74c3c",    // Rojo acento
+    success: "#27ae60",      // Verde éxito
+    warning: "#f39c12",      // Naranja alerta
+    background: "#f8f9fa",   // Gris claro fondo
+    text: "#333333",         // Gris oscuro texto
+    border: "#dddddd",       // Gris bordes
+    white: "#ffffff",        // Blanco
+  };
+
+  const CHART_COLORS = [COLORS.primary, COLORS.secondary, COLORS.success, COLORS.warning, "#3498db", "#9b59b6"];
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -62,21 +76,51 @@ const Dashboard = ({ onLogout }) => {
     ultimasFacturas,
   } = data;
 
-  const StatCard = ({ title, value }) => (
+  // Componente de tarjeta de estadística mejorado
+  const StatCard = ({ title, value, icon }) => (
     <div className="stat-card">
-      <h3>{title}</h3>
+      <div className="stat-header">
+        <h3>{title}</h3>
+        <span className="stat-icon">{icon}</span>
+      </div>
       <div className="stat-value">{value}</div>
     </div>
   );
 
-  const COLORS = ["#e92a2aff", "#e4c332ff", "#60c0ddff", "#5ec961ff"];
+  // Formateador de moneda
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('es-PE', {
+      style: 'currency',
+      currency: 'PEN'
+    }).format(amount);
+  };
+
+  // Formateador de fecha
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('es-PE', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   if (loading) {
     return (
       <div style={{ display: "flex", minHeight: "100vh" }}>
         <Sidebar onLogout={onLogout} />
-        <div className="dashboard" style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div>Cargando dashboard...</div>
+        <div className="dashboard" style={{ 
+          flexGrow: 1, 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center",
+          background: COLORS.background 
+        }}>
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <p>Cargando dashboard...</p>
+          </div>
         </div>
       </div>
     );
@@ -86,112 +130,184 @@ const Dashboard = ({ onLogout }) => {
     return (
       <div style={{ display: "flex", minHeight: "100vh" }}>
         <Sidebar onLogout={onLogout} />
-        <div className="dashboard" style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ color: "red" }}>Error: {error}</div>
+        <div className="dashboard" style={{ 
+          flexGrow: 1, 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center",
+          background: COLORS.background 
+        }}>
+          <div className="error-message">
+            <h3>Error al cargar datos</h3>
+            <p>{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="btn btn-primary"
+            >
+              Reintentar
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: COLORS.background }}>
       {/* Sidebar */}
       <Sidebar onLogout={onLogout} />
 
       {/* Contenido principal */}
       <div className="dashboard" style={{ flexGrow: 1 }}>
+        <header className="dashboard-header">
+         
+            <h1>📊 logo de la agencia</h1>
+            <p>Resumen general de ventas y actividades</p>
+       
+        </header>
+
         <div className="dashboard-content">
           {/* Estadísticas rápidas */}
           <div className="stats-grid">
-            <StatCard title="Clientes" value={totalClientes} />
-            <StatCard title="Productos" value={totalProductos} />
-            <StatCard title="Facturas" value={totalFacturas} />
+            <StatCard 
+              title="Total Clientes" 
+              value={totalClientes} 
+              icon="👥"
+            />
+            <StatCard 
+              title="Productos/Servicios" 
+              value={totalProductos} 
+              icon="📦"
+            />
+            <StatCard 
+              title="Facturas Emitidas" 
+              value={totalFacturas} 
+              icon="🧾"
+            />
           </div>
 
           {/* Gráficos */}
           <div className="charts-grid">
             <div className="chart-card">
-              <h2>Top Categorías Vendidas</h2>
-              {ventasPorCategoria && ventasPorCategoria.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={ventasPorCategoria}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="categoria" stroke="#101111ff" />
-                    <YAxis stroke="#6b7280" />
-                    <Tooltip />
-                    {/* 🔥 CAMBIO AQUÍ: total -> total_vendido */}
-                   <Bar dataKey="total_vendido" fill="#2b09a5ff" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <p style={{ textAlign: 'center', color: '#141414ff', padding: '2rem' }}>
-                  No hay datos de categorías
-                </p>
-              )}
+              <h2>📈 Categorías Más Vendidas</h2>
+              <div style={{ flex: 1, minHeight: 0, width: '100%' }}>
+                {ventasPorCategoria && ventasPorCategoria.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={ventasPorCategoria}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={COLORS.border} />
+                      <XAxis 
+                        dataKey="categoria" 
+                        stroke={COLORS.text}
+                        fontSize={12}
+                      />
+                      <YAxis 
+                        stroke={COLORS.text}
+                        fontSize={12}
+                      />
+                      <Tooltip 
+                        formatter={(value) => [formatCurrency(value), 'Total Vendido']}
+                        labelStyle={{ color: COLORS.primary, fontWeight: 'bold' }}
+                      />
+                      <Bar 
+                        dataKey="total_vendido" 
+                        fill={COLORS.primary} 
+                        radius={[4, 4, 0, 0]}
+                        name="Total Vendido"
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="empty-state">
+                    <p>📊 No hay datos de categorías disponibles</p>
+                    <small>Los datos aparecerán cuando tengas ventas registradas</small>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="chart-card">
-              <h2>Ventas por Método de Pago</h2>
-              {ventasPorMetodo && ventasPorMetodo.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={ventasPorMetodo}
-                      dataKey="total"
-                      nameKey="metodo"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      innerRadius={60}
-                      paddingAngle={5}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {ventasPorMetodo.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => [`${value} ventas`, 'Cantidad']} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <p style={{ textAlign: 'center', color: '#141eadff', padding: '2rem' }}>
-                  No hay datos de ventas por método de pago
-                </p>
-              )}
+              <h2>💰 Ventas por Método de Pago</h2>
+              <div style={{ flex: 1, minHeight: 0, width: '100%' }}>
+                {ventasPorMetodo && ventasPorMetodo.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={ventasPorMetodo}
+                        dataKey="total"
+                        nameKey="metodo"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        innerRadius={60}
+                        paddingAngle={2}
+                        label={({ name, percent }) => `${name}\n${(percent * 100).toFixed(0)}%`}
+                        labelStyle={{ fontSize: 12, fontWeight: 'bold' }}
+                      >
+                        {ventasPorMetodo.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value, name) => [`${value} ventas`, name]}
+                      />
+                      <Legend 
+                        verticalAlign="bottom" 
+                        height={36}
+                        iconType="circle"
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="empty-state">
+                    <p>💳 No hay datos de métodos de pago</p>
+                    <small>Registra ventas para ver la distribución</small>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Últimas facturas */}
+          {/* Últimas facturas - CORREGIDO */}
           <div className="transactions-card">
-            <h2>Últimas Facturas</h2>
+            <div className="transactions-header">
+              <h2>🧾 Últimas Facturas</h2>
+              <span className="total-count">Total: {ultimasFacturas?.length || 0}</span>
+            </div>
+            
             {ultimasFacturas && ultimasFacturas.length > 0 ? (
-              <table>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Nombre Cliente</th>
-                    <th>Monto</th>
-                    <th>Método</th>
-                    <th>Fecha</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ultimasFacturas.map((f) => (
-                    <tr key={f.id}>
-                      <td className="transaction-id">{f.id}</td>
-                      <td className="transaction-desc">{f.cliente}</td>
-                      <td className="transaction-amount">S/ {f.total}</td>
-                      <td className="transaction-condition">{f.metodo || "N/A"}</td>
-                      <td>{new Date(f.fecha).toLocaleString()}</td>
+              <div className="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Cliente</th>
+                      <th>Monto</th>
+                      <th>Método</th>
+                      <th>Fecha</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {ultimasFacturas.map((f, index) => (
+                      <tr key={f.id} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
+                        <td className="transaction-id">#{f.id}</td>
+                        <td className="transaction-client">{f.cliente}</td>
+                        <td className="transaction-amount">{formatCurrency(f.total)}</td>
+                        <td className="transaction-method">
+                          <span className={`payment-badge ${f.metodo?.toLowerCase() || 'default'}`}>
+                            {f.metodo || "N/A"}
+                          </span>
+                        </td>
+                        <td className="transaction-date">{formatDate(f.fecha)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ) : (
-              <p style={{ textAlign: 'center', color: '#08158fff', padding: '2rem' }}>
-                No hay facturas registradas
-              </p>
+              <div className="empty-state">
+                <p>📄 No hay facturas registradas</p>
+                <small>Las facturas aparecerán aquí cuando las registres</small>
+              </div>
             )}
           </div>
         </div>
