@@ -1,5 +1,6 @@
 // src/components/Sidebar.jsx
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import logoAgencia from "../../imagenes/agencia - png.png";
 
 export default function Sidebar({ onLogout }) {
   const navigate = useNavigate();
@@ -11,10 +12,11 @@ export default function Sidebar({ onLogout }) {
   };
 
   const menuItems = [
-    { name: "Dashboard", path: "/dashboard", icon: "📊" },
-    { name: "Clientes", path: "/clientes", icon: "👥" },
-    { name: "Productos", path: "/producto", icon: "📦" },
-    { name: "Facturas", path: "/factura", icon: "🧾" },
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Clientes", path: "/clientes"},
+    { name: "Servicios", path: "/servicios"},
+    { name: "Facturas", path: "/factura"},
+    { name: "Detalle Factura", path: "/facturas"},
   ];
 
   // Paleta de colores GM Comunicaciones
@@ -22,7 +24,7 @@ export default function Sidebar({ onLogout }) {
     primary: "#1a3e6d",
     secondary: "#e74c3c",
     accent: "#27ae60",
-    background: "#0a166a",
+    background: "rgb(67, 128, 182)",
     hover: "#2c5282",
     text: "#ffffff",
     border: "#2d3748"
@@ -34,11 +36,11 @@ export default function Sidebar({ onLogout }) {
       <div style={{
         width: "260px",
         minHeight: "100vh",
-        background: `linear-gradient(180deg, ${colors.background} 0%, ${colors.primary} 100%)`,
+        background: colors.background,
         color: colors.text,
         display: "flex",
         flexDirection: "column",
-        boxShadow: "4px 0 20px rgba(0, 0, 0, 0.1)",
+        boxShadow: "4px 0 20px rgba(218, 206, 206, 0.1)",
         position: "relative",
         zIndex: 100
       }}>
@@ -47,26 +49,21 @@ export default function Sidebar({ onLogout }) {
         <div style={{ 
           padding: "2rem 1.5rem 1.5rem",
           borderBottom: `1px solid ${colors.border}`,
-          textAlign: "center"
+          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
         }}>
-          <div style={{ 
-            fontWeight: "700", 
-            fontSize: "1.4rem",
-            background: "linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            marginBottom: "0.5rem"
-          }}>
-            GM Comunicaciones
-          </div>
-          <div style={{
-            fontSize: "0.8rem",
-            opacity: 0.8,
-            color: "#cbd5e0"
-          }}>
-            Agencia de Relaciones Públicas
-          </div>
+          <img 
+            src={logoAgencia} 
+            alt="GM Comunicaciones - Agencia de Relaciones Públicas" 
+            style={{
+              maxWidth: "100%",
+              height: "auto",
+              maxHeight: "120px",
+              objectFit: "contain"
+            }}
+          />
         </div>
 
         {/* Menú de navegación */}
@@ -189,7 +186,7 @@ export default function Sidebar({ onLogout }) {
             }}
             className="logout-btn"
           >
-            <span>🚪</span>
+            <span></span>
             Cerrar Sesión
           </button>
         </div>

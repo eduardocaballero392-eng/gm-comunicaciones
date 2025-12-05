@@ -8,7 +8,7 @@ import { apiRequest } from "./config";
 export default function Factura() {
   const navigate = useNavigate();
   const [clientes, setClientes] = useState([]);
-  const [productos, setProductos] = useState([]);
+  const [servicios, setServicios] = useState([]);
   const [cliente, setCliente] = useState("");
   const [metodoPago, setMetodoPago] = useState("Efectivo");
   const [busqueda, setBusqueda] = useState("");
@@ -16,22 +16,31 @@ export default function Factura() {
   const [carrito, setCarrito] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Servicios disponibles de GM Comunicaciones
+  const serviciosDisponibles = [
+    { id: 1, nombre: "Agencia de Prensa y Relaciones Públicas", precio: 2500.00, stock: 999 },
+    { id: 2, nombre: "Media Training", precio: 1800.00, stock: 999 },
+    { id: 3, nombre: "Creatividad Gráfica", precio: 1200.00, stock: 999 },
+    { id: 4, nombre: "Community Manager", precio: 1500.00, stock: 999 },
+    { id: 5, nombre: "Monitoreo de Medios", precio: 900.00, stock: 999 },
+    { id: 6, nombre: "Diseño Web", precio: 2000.00, stock: 999 },
+    { id: 7, nombre: "Marketing de Contenidos", precio: 1600.00, stock: 999 },
+  ];
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [clientesRes, productosRes] = await Promise.all([
-          fetch(apiRequest("/clientes")),
-          fetch(apiRequest("/productos"))
-        ]);
-        
+        const clientesRes = await fetch(apiRequest("/clientes"));
         const clientesData = await clientesRes.json();
-        const productosData = await productosRes.json();
         
         setClientes(clientesData);
-        setProductos(productosData);
+        // Usar servicios disponibles en lugar de productos
+        setServicios(serviciosDisponibles);
       } catch (err) {
         console.error("Error cargando datos:", err);
+        // Si falla el backend, usar servicios de ejemplo
+        setServicios(serviciosDisponibles);
         alert("Error al cargar los datos");
       } finally {
         setLoading(false);
@@ -41,47 +50,47 @@ export default function Factura() {
     fetchData();
   }, []);
 
-  const agregarProducto = (p) => {
-    const cantidad = cantidades[p.id] || 1;
+  const agregarServicio = (s) => {
+    const cantidad = cantidades[s.id] || 1;
     if (!cantidad || cantidad <= 0) {
       alert("Ingrese una cantidad válida");
       return;
     }
     
-    if (cantidad > p.stock) {
-      alert(`❌ Stock insuficiente. Disponible: ${p.stock} unidades`);
+    if (cantidad > s.stock) {
+      alert(`❌ Stock insuficiente. Disponible: ${s.stock} unidades`);
       return;
     }
 
-    const existente = carrito.find((item) => item.id === p.id);
+    const existente = carrito.find((item) => item.id === s.id);
     if (existente) {
       const nuevaCantidad = existente.cantidad + cantidad;
-      if (nuevaCantidad > p.stock) {
-        alert(`❌ No puedes agregar más de ${p.stock} unidades`);
+      if (nuevaCantidad > s.stock) {
+        alert(`❌ No puedes agregar más de ${s.stock} unidades`);
         return;
       }
       setCarrito(
         carrito.map((item) =>
-          item.id === p.id ? { ...item, cantidad: nuevaCantidad } : item
+          item.id === s.id ? { ...item, cantidad: nuevaCantidad } : item
         )
       );
     } else {
-      setCarrito([...carrito, { ...p, cantidad }]);
+      setCarrito([...carrito, { ...s, cantidad }]);
     }
 
-    setCantidades({ ...cantidades, [p.id]: 1 });
+    setCantidades({ ...cantidades, [s.id]: 1 });
   };
 
-  const eliminarProducto = (id) => {
+  const eliminarServicio = (id) => {
     setCarrito(carrito.filter((item) => item.id !== id));
   };
 
   const actualizarCantidad = (id, nuevaCantidad) => {
     if (nuevaCantidad < 1) return;
     
-    const producto = productos.find(p => p.id === id);
-    if (nuevaCantidad > producto.stock) {
-      alert(`❌ Máximo disponible: ${producto.stock} unidades`);
+    const servicio = servicios.find(s => s.id === id);
+    if (nuevaCantidad > servicio.stock) {
+      alert(`❌ Máximo disponible: ${servicio.stock} unidades`);
       return;
     }
     
@@ -97,7 +106,7 @@ export default function Factura() {
     }
 
     if (carrito.length === 0) {
-      alert("🛒 Agregue productos a la factura");
+      alert("🛒 Agregue servicios a la factura");
       return;
     }
 
@@ -107,6 +116,7 @@ export default function Factura() {
       total: total,
       carrito: carrito.map(item => ({
         producto_id: item.id,
+        nombre: item.nombre, // Incluir el nombre del servicio
         cantidad: item.cantidad,
         precio: item.precio
       }))
@@ -124,7 +134,7 @@ export default function Factura() {
       const result = await response.json();
       
       if (response.ok) {
-        alert(`✅ Factura #${result.facturaId} guardada correctamente`);
+        alert(`Factura #${result.facturaId} guardada correctamente`);
         navigate(`/factura/${result.facturaId}`);
         
         // Limpiar formulario
@@ -146,7 +156,7 @@ export default function Factura() {
 
   const imprimirFactura = () => {
     if (carrito.length === 0) {
-      alert("No hay productos para imprimir");
+      alert("No hay servicios para imprimir");
       return;
     }
     window.print();
@@ -166,16 +176,16 @@ export default function Factura() {
       {/* Header */}
       <div className="factura-header">
         <button className="btn-regresar" onClick={() => navigate("/dashboard")}>
-          <FaArrowLeft /> Volver al Dashboard
+         Volver al Dashboard
         </button>
         <div className="header-content">
-          <h1>🧾 Nueva Factura</h1>
+          <h1>Nueva Factura</h1>
           <p>GM Comunicaciones Agencia de Relaciones Públicas</p>
         </div>
       </div>
 
       <div className="factura-grid">
-        {/* Columna Izquierda - Productos */}
+        {/* Columna Izquierda - Servicios */}
         <div className="factura-col izquierda">
           {/* Panel de Control */}
           <div className="control-panel">
@@ -220,34 +230,34 @@ export default function Factura() {
             </div>
           </div>
 
-          {/* Búsqueda de Productos */}
+          {/* Búsqueda de Servicios */}
           <div className="search-container">
             <FaSearch className="search-icon" />
             <input
               type="text"
-              placeholder="Buscar productos por nombre..."
+              placeholder="Buscar servicios por nombre..."
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
               className="input-busqueda"
             />
           </div>
 
-          {/* Lista de Productos */}
+          {/* Lista de Servicios */}
           <div className="productos-section">
-            <h3>📦 Productos Disponibles</h3>
+            <h3>Servicios Disponibles</h3>
             <div className="productos-grid">
-              {productos
-                .filter((p) =>
-                  p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+              {servicios
+                .filter((s) =>
+                  s.nombre.toLowerCase().includes(busqueda.toLowerCase())
                 )
-                .map((p) => (
-                  <div key={p.id} className="producto-card">
+                .map((s) => (
+                  <div key={s.id} className="producto-card">
                     <div className="producto-info">
-                      <h4>{p.nombre}</h4>
-                      <p className="producto-precio">S/ {p.precio}</p>
+                      <h4>{s.nombre}</h4>
+                      <p className="producto-precio">S/ {s.precio.toFixed(2)}</p>
                       <p className="producto-stock">
-                        Stock: <span className={p.stock > 0 ? "stock-disponible" : "stock-agotado"}>
-                          {p.stock} unidades
+                        Disponible: <span className={s.stock > 0 ? "stock-disponible" : "stock-agotado"}>
+                          {s.stock > 0 ? "Sí" : "No"}
                         </span>
                       </p>
                     </div>
@@ -255,23 +265,23 @@ export default function Factura() {
                       <input
                         type="number"
                         min="1"
-                        max={p.stock}
-                        value={cantidades[p.id] || 1}
+                        max={s.stock}
+                        value={cantidades[s.id] || 1}
                         onChange={(e) =>
                           setCantidades({
                             ...cantidades,
-                            [p.id]: parseInt(e.target.value) || 1,
+                            [s.id]: parseInt(e.target.value) || 1,
                           })
                         }
                         className="input-cantidad"
-                        disabled={p.stock <= 0}
+                        disabled={s.stock <= 0}
                       />
                       <button
                         className="btn-agregar"
-                        onClick={() => agregarProducto(p)}
-                        disabled={p.stock <= 0}
+                        onClick={() => agregarServicio(s)}
+                        disabled={s.stock <= 0}
                       >
-                        ➕ Agregar
+                         Agregar
                       </button>
                     </div>
                   </div>
@@ -295,7 +305,7 @@ export default function Factura() {
             <div className="empty-cart">
               <FaShoppingCart size={48} />
               <p>El carrito está vacío</p>
-              <small>Agrega productos desde la lista de la izquierda</small>
+              <small>Agrega servicios desde la lista de la izquierda</small>
             </div>
           ) : (
             <>
@@ -304,7 +314,7 @@ export default function Factura() {
                   <div key={item.id} className="carrito-item">
                     <div className="item-info">
                       <h4>{item.nombre}</h4>
-                      <p>S/ {item.precio} c/u</p>
+                      <p>S/ {item.precio.toFixed(2)} c/u</p>
                     </div>
                     <div className="item-controls">
                       <div className="cantidad-controls">
@@ -327,8 +337,8 @@ export default function Factura() {
                       </p>
                       <button
                         className="btn-eliminar"
-                        onClick={() => eliminarProducto(item.id)}
-                        title="Eliminar producto"
+                        onClick={() => eliminarServicio(item.id)}
+                        title="Eliminar servicio"
                       >
                         <FaTrash />
                       </button>

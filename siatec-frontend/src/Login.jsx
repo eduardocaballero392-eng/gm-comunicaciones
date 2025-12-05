@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./login.css";
 import { apiRequest } from "./config";
+import logoAgencia from "../imagenes/agencia - png.png";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -29,7 +30,7 @@ export default function Login() {
       localStorage.setItem("nombre", response.data.nombre);
 
       toast.success(
-        `Inicio de sesión exitoso 🎉 Bienvenido ${response.data.nombre} (${response.data.rol})`
+        `Inicio de sesión exitoso  Bienvenido ${response.data.nombre} (${response.data.rol})`
       );
 
       setTimeout(() => {
@@ -57,10 +58,12 @@ export default function Login() {
       <div className="login-card">
         <div className="login-header">
           <div className="login-logo">
-            <span className="logo-icon">📊</span>
-            <h1>GM Comunicaciones</h1>
+            <img 
+              src={logoAgencia} 
+              alt="GM Comunicaciones - Agencia de Relaciones Públicas" 
+              className="logo-agencia-login"
+            />
           </div>
-          <p className="login-subtitle">Agencia de Relaciones Públicas</p>
         </div>
 
         <div className="login-content">
@@ -69,7 +72,7 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-              <label htmlFor="email">CORREO ELECTRÓNICO 📧</label>
+              <label htmlFor="email">CORREO ELECTRÓNICO</label>
               <div className="input-container">
                 <input
                   id="email"
@@ -86,7 +89,7 @@ export default function Login() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">CONTRASEÑA 🔒</label>
+              <label htmlFor="password">CONTRASEÑA</label>
               <div className="input-container">
                 <input
                   id="password"

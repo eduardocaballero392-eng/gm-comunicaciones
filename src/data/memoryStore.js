@@ -45,11 +45,11 @@ const facturas = [
     cliente_id: 1,
     usuario_id: 1,
     metodo: "Transferencia",
-    total: 820.5,
+    total: 4900.0, // 2500 + 1500 + 900
     productos: [
-      { id: 1, nombre: "Router Empresarial", cantidad: 1, precio: 480.0 },
-      { id: 3, nombre: "Cable UTP 30m", cantidad: 2, precio: 45.9 },
-      { id: 4, nombre: "Soporte Técnico Express", cantidad: 2, precio: 150.0 },
+      { id: 1, nombre: "Agencia de Prensa y Relaciones Públicas", cantidad: 1, precio: 2500.0 },
+      { id: 4, nombre: "Community Manager", cantidad: 1, precio: 1500.0 },
+      { id: 5, nombre: "Monitoreo de Medios", cantidad: 1, precio: 900.0 },
     ],
     fecha: new Date(Date.now() - 86400000).toISOString(),
   },
@@ -59,11 +59,11 @@ const facturas = [
     cliente_id: 2,
     usuario_id: 2,
     metodo: "Efectivo",
-    total: 725.5,
+    total: 5000.0, // 1800 + 1200 + 2000
     productos: [
-      { id: 2, nombre: "Switch 24 Puertos", cantidad: 1, precio: 650.5 },
-      { id: 3, nombre: "Cable UTP 30m", cantidad: 1, precio: 45.9 },
-      { id: 5, nombre: "Antena Repuesto", cantidad: 1, precio: 75.5 },
+      { id: 2, nombre: "Media Training", cantidad: 1, precio: 1800.0 },
+      { id: 3, nombre: "Creatividad Gráfica", cantidad: 1, precio: 1200.0 },
+      { id: 6, nombre: "Diseño Web", cantidad: 1, precio: 2000.0 },
     ],
     fecha: new Date(Date.now() - 172800000).toISOString(),
   },

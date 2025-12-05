@@ -109,14 +109,14 @@ export default function Clientes() {
       <div className="clientes-header">
         <div className="header-content">
           <div className="title-section">
-            <h1>👥 Gestión de Clientes</h1>
+            <h1> Gestión de Clientes</h1>
             <p>Administra los clientes de GM Comunicaciones</p>
           </div>
           <button 
             onClick={() => navigate("/dashboard")} 
             className="btn-back"
           >
-            ← Volver al Dashboard
+          Volver al Dashboard
           </button>
         </div>
       </div>
@@ -124,7 +124,7 @@ export default function Clientes() {
       {/* Barra de herramientas */}
       <div className="toolbar">
         <div className="search-container">
-          <span className="search-icon">🔍</span>
+          <span className="search-icon"></span>
           <input
             type="text"
             placeholder="Buscar cliente por nombre, email, teléfono..."
@@ -137,7 +137,7 @@ export default function Clientes() {
           onClick={() => setShowForm(true)} 
           className="btn-primary"
         >
-          <span className="btn-icon">➕</span>
+         
           Nuevo Cliente
         </button>
       </div>
@@ -180,7 +180,7 @@ export default function Clientes() {
                     className="btn-edit"
                     title="Editar cliente"
                   >
-                    <span>✏️</span>
+    
                     Editar
                   </button>
                   <button
@@ -188,7 +188,7 @@ export default function Clientes() {
                     className="btn-delete"
                     title="Eliminar cliente"
                   >
-                    <span>🗑️</span>
+                    
                     Eliminar
                   </button>
                 </td>

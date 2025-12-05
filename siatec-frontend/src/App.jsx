@@ -4,9 +4,9 @@ import { ToastContainer } from "react-toastify";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import Clientes from "./Clientes";
-import Producto from "./Producto";
+import Servicios from "./Servicios";
 import Factura from "./Factura"; 
-import FacturaDetalle from "./components/FacturaDetalle"; // 👈 ya lo importaste
+import FacturaDetalle from "./components/FacturaDetalle";
 import "react-toastify/dist/ReactToastify.css";
 
 //revisar{
@@ -43,8 +43,8 @@ function App() {
           element={token ? <Clientes /> : <Navigate to="/" />}
         />
         <Route
-          path="/producto"
-          element={token ? <Producto /> : <Navigate to="/" />}
+          path="/servicios"
+          element={token ? <Servicios /> : <Navigate to="/" />}
         />
 
         {/* Ruta para crear facturas */}
@@ -56,6 +56,12 @@ function App() {
         {/* Ruta para ver detalle de una factura */}
         <Route
           path="/factura/:id"
+          element={token ? <FacturaDetalle /> : <Navigate to="/" />}
+        />
+
+        {/* Ruta para listar todas las facturas */}
+        <Route
+          path="/facturas"
           element={token ? <FacturaDetalle /> : <Navigate to="/" />}
         />
 
